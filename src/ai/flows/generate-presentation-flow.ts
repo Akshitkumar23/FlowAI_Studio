@@ -27,7 +27,7 @@ import type { RevisePresentationInput, RevisePresentationOutput } from '@/ai/sch
 const GeneratePresentationInputSchema = z.object({
   topic: z.string().describe('The topic of the presentation.'),
   style: z.string().describe('The desired visual style of the presentation images.'),
-  writingStyle: z.string().optional().describe('The desired writing style for the text content.'),
+  writingStyle: z.string().min(1).describe('The desired writing style for the text content.'),
   numberOfSlides: z.number().int().min(1).describe('The number of slides to generate.'),
 });
 export type GeneratePresentationInput = z.infer<typeof GeneratePresentationInputSchema>;
@@ -232,3 +232,5 @@ const revisePresentationFlow = ai.defineFlow(
 export async function revisePresentation(input: RevisePresentationInput): Promise<RevisePresentationOutput> {
     return revisePresentationFlow(input);
 }
+
+    

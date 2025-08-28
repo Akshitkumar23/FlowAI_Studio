@@ -24,7 +24,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogC
 const formSchema = z.object({
   topic: z.string().min(3, "Topic must be at least 3 characters long."),
   style: z.string().min(1, "Please select a style."),
-  writingStyle: z.string().optional(),
+  writingStyle: z.string().min(1, "Please select a writing style."),
   pdfTheme: z.string().min(1, "Please select a PDF theme."),
   titlePageTheme: z.string().optional(),
   numberOfSlides: z.coerce.number().min(1, "Number of slides must be at least 1.").max(10, "Number of slides cannot exceed 10."),
@@ -712,3 +712,5 @@ export default function PresentationGeneratorPage() {
     </>
   );
 }
+
+    

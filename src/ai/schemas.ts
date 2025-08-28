@@ -17,7 +17,7 @@ export type Slide = z.infer<typeof SlideSchema>;
 
 export const RevisePresentationInputSchema = z.object({
     topic: z.string(),
-    writingStyle: z.string().optional(),
+    writingStyle: z.string().min(1),
     slides: z.array(SlideSchema),
     feedback: z.string().describe("The user's feedback on what to change about the presentation."),
 });
@@ -27,3 +27,5 @@ export const RevisePresentationOutputSchema = z.object({
     slides: z.array(SlideSchema),
 });
 export type RevisePresentationOutput = z.infer<typeof RevisePresentationOutputSchema>;
+
+    
