@@ -26,7 +26,7 @@ export function FeatureCard({ title, description, href, icon }: FeatureCardProps
             {description}
             </p>
             <div className="mt-4">
-            <Button variant="secondary" className="w-full">
+            <Button variant="default" className="w-full">
                 Go to {title}
             </Button>
             </div>
