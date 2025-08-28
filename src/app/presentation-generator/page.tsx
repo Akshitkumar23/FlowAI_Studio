@@ -562,19 +562,6 @@ export default function PresentationGeneratorPage() {
             
             {slides.length > 0 && (
                 <>
-                 <Card className="glass">
-                    <CardHeader>
-                        <CardTitle>Review & Download</CardTitle>
-                        <CardDescription>Preview your presentation and download it as a PDF.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="flex justify-center items-center gap-4">
-                        <Button onClick={() => setIsPreviewOpen(true)} disabled={isLoading}>
-                            <Eye className="mr-2 h-4 w-4" />
-                            Preview PDF
-                        </Button>
-                    </CardContent>
-                </Card>
-
                 <div className="space-y-4">
                     {slides.map((slide, index) => (
                         <Card key={index} className="glass overflow-hidden slide-card">
@@ -665,6 +652,19 @@ export default function PresentationGeneratorPage() {
                        </div>
                     </CardContent>
                 </Card>
+
+                 <Card className="glass">
+                    <CardHeader>
+                        <CardTitle>Preview & Download</CardTitle>
+                        <CardDescription>When you're ready, preview your presentation and download it as a PDF.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="flex justify-center items-center gap-4">
+                        <Button onClick={() => setIsPreviewOpen(true)} disabled={isLoading || isRevising}>
+                            <Eye className="mr-2 h-4 w-4" />
+                            Preview & Download PDF
+                        </Button>
+                    </CardContent>
+                </Card>
                 </>
             )}
         </div>
@@ -675,24 +675,23 @@ export default function PresentationGeneratorPage() {
 
     <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
         <DialogContent className="max-w-7xl w-full h-[90vh] flex flex-col p-0 glass">
-            <DialogHeader className="p-4 border-b">
+            <DialogHeader className="p-4 border-b flex-row flex justify-between items-center">
                 <DialogTitle>PDF Preview</DialogTitle>
                 <DialogClose asChild>
-                    <button className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
-                        <X className="h-4 w-4" />
-                        <span className="sr-only">Close</span>
-                    </button>
+                    <Button variant="ghost" size="icon" className="rounded-full">
+                      <X className="h-4 w-4" />
+                      <span className="sr-only">Close</span>
+                    </Button>
                 </DialogClose>
             </DialogHeader>
-            <div className="flex-grow overflow-auto bg-background/50 p-8">
-                <div className="w-[1280px] mx-auto scale-[0.7] -translate-y-[15%] origin-top">
+            <div className="flex-grow overflow-auto bg-background/50 p-4 sm:p-8">
+                <div className="mx-auto w-full max-w-[1280px] origin-top"
+                     style={{ transform: `scale(var(--preview-scale, 0.8))`, transformOrigin: 'top' }}
+                >
                     {isPreviewOpen && <PreviewSlides />}
                 </div>
             </div>
-            <DialogFooter className="p-4 border-t !justify-between">
-                <DialogClose asChild>
-                    <Button variant="outline">Close</Button>
-                </DialogClose>
+            <DialogFooter className="p-4 border-t">
                 <Button onClick={generateAndDownloadPdf} disabled={isProcessingPdf}>
                 {isProcessingPdf ? (
                   <>
@@ -712,5 +711,3 @@ export default function PresentationGeneratorPage() {
     </>
   );
 }
-
-    
