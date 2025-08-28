@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, RefreshCw, Download, Wand2, ArrowUp, ArrowDown, ChevronDown, Upload, Eye, X } from "lucide-react";
 import Image from "next/image";
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -166,11 +166,27 @@ export default function PresentationGeneratorPage() {
       format: [1280, 720]
     });
 
-    const slideElements = Array.from(previewContainerRef.current.children);
+    const slideElements = Array.from(previewContainerRef.current.children) as HTMLElement[];
     
     try {
       for (let i = 0; i < slideElements.length; i++) {
-        const slideElement = slideElements[i] as HTMLElement;
+        const slideElement = slideElements[i];
+        
+        // Ensure all images within the slide are loaded
+        const images = Array.from(slideElement.getElementsByTagName('img'));
+        await Promise.all(
+          images.map(img => 
+            new Promise<void>(resolve => {
+              if (img.complete) {
+                resolve();
+              } else {
+                img.onload = () => resolve();
+                img.onerror = () => resolve(); // Resolve even on error to not block PDF generation
+              }
+            })
+          )
+        );
+
         const canvas = await html2canvas(slideElement, {
           useCORS: true,
           scale: 2,
@@ -190,72 +206,65 @@ export default function PresentationGeneratorPage() {
     } finally {
       setIsProcessingPdf(false);
     }
-};
+  };
 
-  const buildTitlePageHtml = (values: FormValues, logoDataUrl: string | null): string => {
+
+  const TitlePage = ({ values, logoDataUrl }: { values: FormValues, logoDataUrl: string | null }) => {
     const titleThemeName = values.titlePageTheme || values.pdfTheme;
     const titleTheme = pdfThemes.find(t => t.name === titleThemeName) || pdfThemes[0];
     
-    return `
-      <div style="width: 1280px; height: 720px; aspect-ratio: 16 / 9; background: ${titleTheme.background}; color: ${titleTheme.text}; font-family: 'Inter', sans-serif; box-sizing: border-box; display: flex; flex-direction: column; box-shadow: 0 0 10px rgba(0,0,0,0.5); overflow: hidden;">
-          <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; height: 100%; padding: 60px; box-sizing: border-box; text-align: center;">
-              ${values.institute ? `<div style="font-size: 48px; font-weight: 800; color: ${titleTheme.title}; line-height: 1.2;">${values.institute}</div>` : ''}
-              ${values.department ? `<div style="font-size: 24px; font-weight: 500; margin-top: 8px; border-bottom: 1px solid ${titleTheme.title}; border-top: 1px solid ${titleTheme.title}; padding: 8px 0; display: inline-block;">${values.department}</div>` : ''}
-              ${logoDataUrl ? `<div style="margin: 40px 0;"><img src="${logoDataUrl}" style="max-width: 150px; max-height: 100px; display: inline-block;" alt="logo"/></div>` : ''}
-              <div style="font-size: 36px; font-weight: 700; color: ${titleTheme.title}; margin: 40px 0;">"${values.topic}"</div>
-              <div style="display: flex; justify-content: space-around; width: 100%; margin-top: auto;">
-                  ${values.submittedTo ? `<div style="flex: 1; text-align: center;"><div style="font-size: 20px; font-weight: 700; color: ${titleTheme.title}; margin-bottom: 12px; text-transform: uppercase;">Submitted To</div><div style="font-size: 18px; line-height: 1.5; white-space: pre-wrap;">${values.submittedTo}</div></div>` : ''}
-                  ${values.submittedBy ? `<div style="flex: 1; text-align: center;"><div style="font-size: 20px; font-weight: 700; color: ${titleTheme.title}; margin-bottom: 12px; text-transform: uppercase;">Submitted By</div><div style="font-size: 18px; line-height: 1.5; white-space: pre-wrap;">${values.submittedBy}</div></div>` : ''}
-              </div>
+    return (
+      <div style={{ width: 1280, height: 720, aspectRatio: '16 / 9', background: titleTheme.background, color: titleTheme.text, fontFamily: 'Inter, sans-serif', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', boxShadow: '0 0 10px rgba(0,0,0,0.5)', overflow: 'hidden' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%', padding: 60, boxSizing: 'border-box', textAlign: 'center' }}>
+          {values.institute && <div style={{ fontSize: 48, fontWeight: 800, color: titleTheme.title, lineHeight: 1.2 }}>{values.institute}</div>}
+          {values.department && <div style={{ fontSize: 24, fontWeight: 500, marginTop: 8, borderBottom: `1px solid ${titleTheme.title}`, borderTop: `1px solid ${titleTheme.title}`, padding: '8px 0', display: 'inline-block' }}>{values.department}</div>}
+          {logoDataUrl && <div style={{ margin: '40px 0' }}><img src={logoDataUrl} style={{ maxWidth: 150, maxHeight: 100, display: 'inline-block' }} alt="logo" crossOrigin="anonymous"/></div>}
+          <div style={{ fontSize: 36, fontWeight: 700, color: titleTheme.title, margin: '40px 0' }}>"{values.topic}"</div>
+          <div style={{ display: 'flex', justifyContent: 'space-around', width: '100%', marginTop: 'auto' }}>
+            {values.submittedTo && <div style={{ flex: 1, textAlign: 'center' }}><div style={{ fontSize: 20, fontWeight: 700, color: titleTheme.title, marginBottom: 12, textTransform: 'uppercase' }}>Submitted To</div><div style={{ fontSize: 18, lineHeight: 1.5, whiteSpace: 'pre-wrap' }}>{values.submittedTo}</div></div>}
+            {values.submittedBy && <div style={{ flex: 1, textAlign: 'center' }}><div style={{ fontSize: 20, fontWeight: 700, color: titleTheme.title, marginBottom: 12, textTransform: 'uppercase' }}>Submitted By</div><div style={{ fontSize: 18, lineHeight: 1.5, whiteSpace: 'pre-wrap' }}>{values.submittedBy}</div></div>}
           </div>
-      </div>`;
+        </div>
+      </div>
+    );
   };
-
-  const buildContentSlideHtml = (slide: Slide, index: number, values: FormValues, imageDataUrl: string | null): string => {
+  
+  const ContentSlide = ({ slide, index, values }: { slide: Slide, index: number, values: FormValues }) => {
       const contentTheme = pdfThemes.find(t => t.name === values.pdfTheme) || pdfThemes[0];
-      const layoutType = imageDataUrl ? slideLayouts[index % slideLayouts.length] : 'text-only';
+      const layoutType = slide.image ? slideLayouts[index % slideLayouts.length] : 'text-only';
       
-      const titleHtml = `<div style="font-size: 48px; font-weight: 800; color: ${contentTheme.title}; padding: 0; margin-bottom: 24px; text-align: left; line-height: 1.2;">${slide.title}</div>`;
-      const contentHtml = `<ul style="list-style: none; padding: 0; margin: 0; font-size: 26px; line-height: 1.6;">${slide.content.map(point => `<li style="margin-bottom: 16px; display: flex; align-items: flex-start;"><span style="margin-right: 16px; margin-top: 6px; font-size: 24px; color: ${contentTheme.title};">&#9679;</span><span>${point}</span></li>`).join('')}</ul>`;
-      const footerHtml = `<div style="position: absolute; bottom: 30px; left: 60px; font-size: 14px; color: ${contentTheme.text}; opacity: 0.7;">${values.topic} - Slide ${index + 1}</div>`;
-
-      const textContentDiv = `<div style="flex: 1; display: flex; flex-direction: column; justify-content: center;">${titleHtml}${contentHtml}</div>`;
-      const imageDiv = imageDataUrl ? `<div style="flex: 1; display: flex; align-items: center; justify-content: center; height: 100%;"><img src="${imageDataUrl}" style="max-width: 100%; max-height: 580px; object-fit: cover; border-radius: 12px; box-shadow: 0 10px 20px rgba(0,0,0,0.1);" crossorigin="anonymous" /></div>` : '';
+      const titleHtml = <div style={{ fontSize: 48, fontWeight: 800, color: contentTheme.title, padding: 0, marginBottom: 24, textAlign: 'left', lineHeight: 1.2 }}>{slide.title}</div>;
+      const contentHtml = <ul style={{ listStyle: 'none', padding: 0, margin: 0, fontSize: 26, lineHeight: 1.6 }}>{slide.content.map((point, i) => <li key={i} style={{ marginBottom: 16, display: 'flex', alignItems: 'flex-start' }}><span style={{ marginRight: 16, marginTop: 6, fontSize: 24, color: contentTheme.title }}>●</span><span>{point}</span></li>)}</ul>;
+      const footerHtml = <div style={{ position: 'absolute', bottom: 30, left: 60, fontSize: 14, color: contentTheme.text, opacity: 0.7 }}>{values.topic} - Slide {index + 1}</div>;
+  
+      const textContentDiv = <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>{titleHtml}{contentHtml}</div>;
+      const imageDiv = slide.image ? <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}><img src={slide.image} style={{ maxWidth: '100%', maxHeight: 580, objectFit: 'cover', borderRadius: 12, boxShadow: '0 10px 20px rgba(0,0,0,0.1)' }} crossOrigin="anonymous" alt="slide visual"/></div> : null;
       
-      let slideInnerHtml = '';
+      let slideInnerHtml;
       switch(layoutType) {
         case 'left-image':
-           slideInnerHtml = `<div style="display: flex; width: 100%; height: 100%; padding: 60px 60px 80px 60px; box-sizing: border-box; align-items: center; gap: 50px;">${imageDiv}${textContentDiv}</div>`;
+           slideInnerHtml = <div style={{ display: 'flex', width: '100%', height: '100%', padding: '60px 60px 80px 60px', boxSizing: 'border-box', alignItems: 'center', gap: 50 }}>{imageDiv}{textContentDiv}</div>;
            break;
         case 'right-image':
-           slideInnerHtml = `<div style="display: flex; width: 100%; height: 100%; padding: 60px 60px 80px 60px; box-sizing: border-box; align-items: center; gap: 50px;">${textContentDiv}${imageDiv}</div>`;
+           slideInnerHtml = <div style={{ display: 'flex', width: '100%', height: '100%', padding: '60px 60px 80px 60px', boxSizing: 'border-box', alignItems: 'center', gap: 50 }}>{textContentDiv}{imageDiv}</div>;
            break;
         case 'text-only':
         default:
-            slideInnerHtml = `<div style="display: flex; flex-direction: column; justify-content: center; width: 100%; height: 100%; padding: 80px 60px; box-sizing: border-box; text-align: left;">${titleHtml}${contentHtml}</div>`;
+            slideInnerHtml = <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', width: '100%', height: '100%', padding: '80px 60px', boxSizing: 'border-box', textAlign: 'left' }}>{titleHtml}{contentHtml}</div>;
             break;
       }
-      return `<div style="width: 1280px; height: 720px; aspect-ratio: 16 / 9; background: ${contentTheme.background}; color: ${contentTheme.text}; font-family: 'Inter', sans-serif; box-sizing: border-box; display: flex; flex-direction: column; box-shadow: 0 0 10px rgba(0,0,0,0.5); position: relative; overflow: hidden;">${slideInnerHtml}${footerHtml}</div>`;
+      return <div style={{ width: 1280, height: 720, aspectRatio: '16 / 9', background: contentTheme.background, color: contentTheme.text, fontFamily: 'Inter, sans-serif', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', boxShadow: '0 0 10px rgba(0,0,0,0.5)', position: 'relative', overflow: 'hidden' }}>{slideInnerHtml}{footerHtml}</div>;
   };
-
+  
   const PreviewSlides = useCallback(() => {
       const values = form.getValues();
       const hasTitlePageDetails = values.institute || values.department || values.submittedTo || values.submittedBy || logoFile;
-
-      const allSlidesHtml = [];
-
-      if (hasTitlePageDetails) {
-          allSlidesHtml.push(buildTitlePageHtml(values, logoPreview));
-      }
-
-      slides.forEach((slide, i) => {
-          allSlidesHtml.push(buildContentSlideHtml(slide, i, values, slide.image || null));
-      });
       
       return (
           <div ref={previewContainerRef} className="flex flex-col items-center gap-8">
-              {allSlidesHtml.map((html, i) => (
-                  <div key={i} dangerouslySetInnerHTML={{ __html: html }} />
+              {hasTitlePageDetails && <TitlePage values={values} logoDataUrl={logoPreview} />}
+              {slides.map((slide, i) => (
+                  <ContentSlide key={i} slide={slide} index={i} values={values} />
               ))}
           </div>
       );
