@@ -265,7 +265,7 @@ export default function PresentationGeneratorPage() {
       const layoutType = slide.image ? slideLayouts[index % slideLayouts.length] : 'text-only';
       
       const titleHtml = <div style={{ fontSize: 48, fontWeight: 800, color: contentTheme.title, padding: 0, marginBottom: 24, textAlign: 'left', lineHeight: 1.2 }}>{slide.title}</div>;
-      const contentHtml = <ul style={{ listStyle: 'none', padding: 0, margin: 0, fontSize: 26, lineHeight: 1.6 }}>{slide.content.map((point, i) => <li key={i} style={{ marginBottom: 16, display: 'flex', alignItems: 'flex-start' }}><span style={{ marginRight: 16, marginTop: 6, fontSize: 24, color: contentTheme.title }}>●</span><span>{point}</span></li>)}</ul>;
+      const contentHtml = <ul style={{ listStyle: 'none', padding: 0, margin: 0, fontSize: 26, lineHeight: 1.6, color: contentTheme.text }}>{slide.content.map((point, i) => <li key={i} style={{ marginBottom: 16, display: 'flex', alignItems: 'flex-start' }}><span style={{ marginRight: 16, marginTop: 6, fontSize: 24, color: contentTheme.title }}>●</span><span>{point}</span></li>)}</ul>;
       const footerHtml = <div style={{ position: 'absolute', bottom: 30, left: 60, fontSize: 14, color: contentTheme.text, opacity: 0.7 }}>{values.topic} - Slide {index + 1}</div>;
   
       const textContentDiv = <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>{titleHtml}{contentHtml}</div>;
@@ -686,7 +686,7 @@ export default function PresentationGeneratorPage() {
             </DialogHeader>
             <div className="flex-grow overflow-auto bg-background/50 p-4 sm:p-8">
                 <div className="mx-auto w-full max-w-[1280px] origin-top"
-                     style={{ transform: `scale(var(--preview-scale, 0.8))`, transformOrigin: 'top' }}
+                     style={{ transform: `scale(var(--preview-scale, 1))`, transformOrigin: 'top' }}
                 >
                     {isPreviewOpen && <PreviewSlides />}
                 </div>
