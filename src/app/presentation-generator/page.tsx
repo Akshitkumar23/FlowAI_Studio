@@ -61,6 +61,8 @@ export default function PresentationGeneratorPage() {
   const [contentModifyingIndex, setContentModifyingIndex] = useState<number | null>(null);
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const [titleBgFile, setTitleBgFile] = useState<File | null>(null);
+  const [titleBgPreview, setTitleBgPreview] = useState<string | null>(null);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const previewContainerRef = useRef<HTMLDivElement>(null);
   const [isRevising, setIsRevising] = useState(false);
@@ -91,6 +93,18 @@ export default function PresentationGeneratorPage() {
         setLogoPreview(reader.result as string);
       };
       reader.readAsDataURL(file);
+    }
+  };
+
+  const handleTitleBgChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files?.[0]) {
+        const file = e.target.files[0];
+        setTitleBgFile(file);
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setTitleBgPreview(reader.result as string);
+        };
+        reader.readAsDataURL(file);
     }
   };
 
@@ -240,13 +254,18 @@ export default function PresentationGeneratorPage() {
     }
   };
 
-  const TitlePage = ({ values, logoDataUrl }: { values: FormValues, logoDataUrl: string | null }) => {
+  const TitlePage = ({ values, logoDataUrl, bgDataUrl }: { values: FormValues, logoDataUrl: string | null, bgDataUrl: string | null }) => {
     const titleThemeName = values.titlePageTheme || values.pdfTheme;
     const titleTheme = pdfThemes.find(t => t.name === titleThemeName) || pdfThemes[0];
     
+    const backgroundStyle = bgDataUrl 
+      ? { backgroundImage: `url(${bgDataUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+      : { background: titleTheme.background };
+
     return (
-      <div style={{ width: 1280, height: 720, aspectRatio: '16 / 9', background: titleTheme.background, color: titleTheme.text, fontFamily: 'Inter, sans-serif', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', boxShadow: '0 0 10px rgba(0,0,0,0.5)', overflow: 'hidden' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%', padding: 60, boxSizing: 'border-box', textAlign: 'center' }}>
+      <div style={{ width: 1280, height: 720, aspectRatio: '16 / 9', ...backgroundStyle, color: titleTheme.text, fontFamily: 'Inter, sans-serif', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', boxShadow: '0 0 10px rgba(0,0,0,0.5)', overflow: 'hidden', position: 'relative' }}>
+        <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)', zIndex: 1 }}></div>
+        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%', padding: 60, boxSizing: 'border-box', textAlign: 'center', zIndex: 2, position: 'relative' }}>
           {values.institute && <div style={{ fontSize: 48, fontWeight: 800, color: titleTheme.title, lineHeight: 1.2 }}>{values.institute}</div>}
           {values.department && <div style={{ fontSize: 24, fontWeight: 500, marginTop: 8, borderBottom: `1px solid ${titleTheme.title}`, borderTop: `1px solid ${titleTheme.title}`, padding: '8px 0', display: 'inline-block' }}>{values.department}</div>}
           {logoDataUrl && <div style={{ margin: '40px 0' }}><img src={logoDataUrl} style={{ maxWidth: 150, maxHeight: 100, display: 'inline-block' }} alt="logo" crossOrigin="anonymous"/></div>}
@@ -289,17 +308,17 @@ export default function PresentationGeneratorPage() {
   
   const PreviewSlides = useCallback(() => {
       const values = form.getValues();
-      const hasTitlePageDetails = values.institute || values.department || values.submittedTo || values.submittedBy || logoFile;
+      const hasTitlePageDetails = values.institute || values.department || values.submittedTo || values.submittedBy || logoFile || titleBgFile;
       
       return (
         <div ref={previewContainerRef}>
-            {hasTitlePageDetails && <TitlePage values={values} logoDataUrl={logoPreview} />}
+            {hasTitlePageDetails && <TitlePage values={values} logoDataUrl={logoPreview} bgDataUrl={titleBgPreview} />}
             {slides.map((slide, i) => (
                 <ContentSlide key={i} slide={slide} index={i} values={values} />
             ))}
         </div>
       );
-  }, [slides, form, logoFile, logoPreview]);
+  }, [slides, form, logoFile, logoPreview, titleBgFile, titleBgPreview]);
 
 
   return (
@@ -438,7 +457,7 @@ export default function PresentationGeneratorPage() {
                                 </Button>
                             </CollapsibleTrigger>
                             <CollapsibleContent className="space-y-4 pt-4 animate-accordion-down">
-                            <FormField
+                                <FormField
                                     control={form.control}
                                     name="titlePageTheme"
                                     render={({ field }) => (
@@ -515,21 +534,35 @@ export default function PresentationGeneratorPage() {
                                         </FormItem>
                                     )}
                                 />
-                                <FormItem>
-                                    <FormLabel>Logo (Optional)</FormLabel>
-                                    <FormControl>
-                                        <div className="flex items-center gap-4">
-                                        <label htmlFor="logo-upload" className="flex-grow">
-                                            <div className="flex items-center justify-center w-full h-12 border-2 border-dashed rounded-md cursor-pointer hover:border-primary">
-                                                <Upload className="h-5 w-5 text-muted-foreground mr-2"/>
-                                                <span className="text-sm text-muted-foreground">Upload Logo</span>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <FormItem>
+                                        <FormLabel>Logo (Optional)</FormLabel>
+                                        <FormControl>
+                                            <div className="flex items-center gap-4">
+                                            <label htmlFor="logo-upload" className="flex-grow">
+                                                <div className="flex items-center justify-center w-full h-12 border-2 border-dashed rounded-md cursor-pointer hover:border-primary">
+                                                    <Upload className="h-5 w-5 text-muted-foreground mr-2"/>
+                                                    <span className="text-sm text-muted-foreground">Upload Logo</span>
+                                                </div>
+                                                <Input id="logo-upload" type="file" accept="image/*" onChange={handleLogoChange} className="sr-only" />
+                                            </label>
+                                            {logoPreview && <Image src={logoPreview} alt="logo preview" width={48} height={48} className="object-contain rounded-md border p-1" />}
                                             </div>
-                                            <Input id="logo-upload" type="file" accept="image/*" onChange={handleLogoChange} className="sr-only" />
-                                        </label>
-                                        {logoPreview && <Image src={logoPreview} alt="logo preview" width={48} height={48} className="object-contain rounded-md border p-1" />}
-                                        </div>
-                                    </FormControl>
-                                </FormItem>
+                                        </FormControl>
+                                    </FormItem>
+                                    <FormItem>
+                                        <FormLabel>Background Image (Optional)</FormLabel>
+                                        <FormControl>
+                                            <label htmlFor="title-bg-upload" className="flex-grow">
+                                                <div className="flex items-center justify-center w-full h-12 border-2 border-dashed rounded-md cursor-pointer hover:border-primary">
+                                                    <Upload className="h-5 w-5 text-muted-foreground mr-2"/>
+                                                    <span className="text-sm text-muted-foreground">Upload Background</span>
+                                                </div>
+                                                <Input id="title-bg-upload" type="file" accept="image/*" onChange={handleTitleBgChange} className="sr-only" />
+                                            </label>
+                                        </FormControl>
+                                    </FormItem>
+                                </div>
                             </CollapsibleContent>
                         </Collapsible>
 
@@ -685,8 +718,8 @@ export default function PresentationGeneratorPage() {
                 </DialogClose>
             </DialogHeader>
             <div className="flex-grow overflow-auto bg-background/50 p-4 sm:p-8">
-                <div className="mx-auto w-full max-w-[1280px] origin-top"
-                     style={{ transform: `scale(var(--preview-scale, 1))`, transformOrigin: 'top' }}
+                <div className="mx-auto w-full max-w-[1280px] origin-top scale-[var(--preview-scale,0.25)] sm:scale-[var(--preview-scale,0.5)] md:scale-[var(--preview-scale,0.75)] lg:scale-[var(--preview-scale,1)]"
+                     style={{ transformOrigin: 'top' }}
                 >
                     {isPreviewOpen && <PreviewSlides />}
                 </div>
