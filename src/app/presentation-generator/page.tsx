@@ -535,32 +535,12 @@ export default function PresentationGeneratorPage() {
             
             {slides.length > 0 && (
                 <>
-                <Card className="glass">
+                 <Card className="glass">
                     <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                           <MessageCircle className="text-primary"/>
-                           AI Director
-                        </CardTitle>
-                        <CardDescription>Review your generated slides below. You can edit content, regenerate images, and then download the final PDF.</CardDescription>
+                        <CardTitle>Review & Download</CardTitle>
+                        <CardDescription>Preview your presentation and download it as a PDF.</CardDescription>
                     </CardHeader>
-                    <CardContent>
-                       <div className="space-y-4">
-                            <Textarea 
-                                placeholder="e.g., 'Make it more professional' or 'Add a slide about financial risks'"
-                                value={directorFeedback}
-                                onChange={(e) => setDirectorFeedback(e.target.value)}
-                                rows={3}
-                            />
-                            <Button onClick={handleDirectorSubmit} disabled={isRevising || !directorFeedback} className="w-full">
-                                {isRevising ? (
-                                    <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Revising...</>
-                                ) : (
-                                    "Submit Feedback"
-                                )}
-                            </Button>
-                       </div>
-                    </CardContent>
-                    <CardContent className="flex justify-center items-center gap-4 pt-4 border-t">
+                    <CardContent className="flex justify-center items-center gap-4">
                         <Button onClick={() => setIsPreviewOpen(true)} disabled={isLoading}>
                             <Eye className="mr-2 h-4 w-4" />
                             Preview PDF
@@ -629,6 +609,33 @@ export default function PresentationGeneratorPage() {
                     </CardContent>
                     </Card>
                 ))}
+                
+                <Card className="glass">
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                           <MessageCircle className="text-primary"/>
+                           AI Director
+                        </CardTitle>
+                        <CardDescription>Not quite right? Give the AI feedback to revise the whole presentation.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                       <div className="space-y-4">
+                            <Textarea 
+                                placeholder="e.g., 'Make it more professional' or 'Add a slide about financial risks'"
+                                value={directorFeedback}
+                                onChange={(e) => setDirectorFeedback(e.target.value)}
+                                rows={3}
+                            />
+                            <Button onClick={handleDirectorSubmit} disabled={isRevising || !directorFeedback} className="w-full">
+                                {isRevising ? (
+                                    <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Revising...</>
+                                ) : (
+                                    "Submit Feedback"
+                                )}
+                            </Button>
+                       </div>
+                    </CardContent>
+                </Card>
                 </>
             )}
         </div>
@@ -676,3 +683,5 @@ export default function PresentationGeneratorPage() {
     </>
   );
 }
+
+    
