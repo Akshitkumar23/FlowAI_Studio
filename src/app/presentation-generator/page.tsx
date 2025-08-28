@@ -9,9 +9,9 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, RefreshCw, Download, Wand2, ArrowUp, ArrowDown, ChevronDown, Upload, Eye, X } from "lucide-react";
+import { Loader2, RefreshCw, Download, Wand2, ArrowUp, ArrowDown, ChevronDown, Upload, Eye, X, FileSignature } from "lucide-react";
 import Image from "next/image";
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useRef, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -51,7 +51,6 @@ const pdfThemes = [
 ];
 
 const slideLayouts = ['left-image', 'right-image'];
-
 
 export default function PresentationGeneratorPage() {
   const [slides, setSlides] = useState<Slide[]>([]);
@@ -102,7 +101,6 @@ export default function PresentationGeneratorPage() {
       });
 
       const generatedSlides = await Promise.all(slidesWithImageGenPromises);
-
       setSlides(generatedSlides);
 
     } catch (error) {
@@ -172,7 +170,6 @@ export default function PresentationGeneratorPage() {
       for (let i = 0; i < slideElements.length; i++) {
         const slideElement = slideElements[i];
         
-        // Ensure all images within the slide are loaded
         const images = Array.from(slideElement.getElementsByTagName('img'));
         await Promise.all(
           images.map(img => 
@@ -181,7 +178,10 @@ export default function PresentationGeneratorPage() {
                 resolve();
               } else {
                 img.onload = () => resolve();
-                img.onerror = () => resolve(); // Resolve even on error to not block PDF generation
+                img.onerror = () => {
+                  console.error(`Failed to load image for PDF: ${img.src}`);
+                  resolve(); // Resolve even on error
+                }
               }
             })
           )
@@ -207,7 +207,6 @@ export default function PresentationGeneratorPage() {
       setIsProcessingPdf(false);
     }
   };
-
 
   const TitlePage = ({ values, logoDataUrl }: { values: FormValues, logoDataUrl: string | null }) => {
     const titleThemeName = values.titlePageTheme || values.pdfTheme;
@@ -261,12 +260,12 @@ export default function PresentationGeneratorPage() {
       const hasTitlePageDetails = values.institute || values.department || values.submittedTo || values.submittedBy || logoFile;
       
       return (
-          <div ref={previewContainerRef} className="flex flex-col items-center gap-8">
-              {hasTitlePageDetails && <TitlePage values={values} logoDataUrl={logoPreview} />}
-              {slides.map((slide, i) => (
-                  <ContentSlide key={i} slide={slide} index={i} values={values} />
-              ))}
-          </div>
+        <div ref={previewContainerRef}>
+            {hasTitlePageDetails && <TitlePage values={values} logoDataUrl={logoPreview} />}
+            {slides.map((slide, i) => (
+                <ContentSlide key={i} slide={slide} index={i} values={values} />
+            ))}
+        </div>
       );
   }, [slides, form, logoFile, logoPreview]);
 
@@ -280,306 +279,332 @@ export default function PresentationGeneratorPage() {
         description="Generate a full presentation from a topic, including text and AI-generated images."
       />
 
-      <div className="max-w-xl mx-auto">
-        <Card className="glass">
-          <CardHeader>
-            <CardTitle>Create Your Presentation</CardTitle>
-            <CardDescription>Fill in the details below to generate your presentation.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <FormField
-                  control={form.control}
-                  name="topic"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Topic</FormLabel>
-                      <FormControl>
-                        <Input placeholder="e.g., 'The Future of Renewable Energy'" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="style"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Image Style</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select a style" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="Professional">Professional</SelectItem>
-                            <SelectItem value="Creative">Creative</SelectItem>
-                            <SelectItem value="Minimalist">Minimalist</SelectItem>
-                            <SelectItem value="Futuristic">Futuristic</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                   <FormField
-                    control={form.control}
-                    name="pdfTheme"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Content PDF Theme</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select a theme" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {pdfThemes.map(theme => (
-                              <SelectItem key={theme.name} value={theme.name}>
-                                <div className="flex items-center gap-2">
-                                  <div className={`w-4 h-4 rounded-full border ${theme.swatch}`}></div>
-                                  <span>{theme.name}</span>
-                                </div>
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                 <FormField
-                    control={form.control}
-                    name="numberOfSlides"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Number of Slides</FormLabel>
-                        <FormControl>
-                          <Input type="number" min="1" max="10" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-7xl mx-auto items-start">
 
-                <Collapsible>
-                    <CollapsibleTrigger asChild>
-                        <Button variant="link" className="p-0 h-auto">
-                            <ChevronDown className="h-4 w-4 mr-2" />
-                            Add Optional Title Page Details
-                        </Button>
-                    </CollapsibleTrigger>
-                    <CollapsibleContent className="space-y-4 pt-4">
-                       <FormField
-                            control={form.control}
-                            name="titlePageTheme"
-                            render={({ field }) => (
-                               <FormItem>
-                                <FormLabel>Title Page Theme</FormLabel>
-                                <Select onValueChange={field.onChange} value={field.value || ''}>
-                                    <FormControl>
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select a theme (defaults to content theme)" />
-                                        </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                        {pdfThemes.map(theme => (
-                                        <SelectItem key={theme.name} value={theme.name}>
-                                            <div className="flex items-center gap-2">
-                                            <div className={`w-4 h-4 rounded-full border ${theme.swatch}`}></div>
-                                            <span>{theme.name}</span>
-                                            </div>
-                                        </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                                <FormMessage />
-                                </FormItem>
-                            )}
+        {/* Left Column: Form */}
+        <div className="lg:sticky lg:top-8">
+            <Card className="glass shadow-2xl shadow-primary/10">
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-2xl">
+                        <FileSignature className="text-primary"/>
+                        Create Your Presentation
+                    </CardTitle>
+                    <CardDescription>Fill in the details below to generate your masterpiece.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                        <FormField
+                        control={form.control}
+                        name="topic"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormLabel>Topic</FormLabel>
+                            <FormControl>
+                                <Input placeholder="e.g., 'The Future of Renewable Energy'" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                            </FormItem>
+                        )}
                         />
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                             <FormField
-                                control={form.control}
-                                name="institute"
-                                render={({ field }) => (
-                                    <FormItem>
-                                    <FormLabel>Institute/Company</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="e.g., RV Institute of Technology" {...field} />
-                                    </FormControl>
-                                    </FormItem>
-                                )}
-                                />
+                        <FormField
+                            control={form.control}
+                            name="style"
+                            render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Image Style</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormControl>
+                                    <SelectTrigger>
+                                    <SelectValue placeholder="Select a style" />
+                                    </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                    <SelectItem value="Professional">Professional</SelectItem>
+                                    <SelectItem value="Creative">Creative</SelectItem>
+                                    <SelectItem value="Minimalist">Minimalist</SelectItem>
+                                    <SelectItem value="Futuristic">Futuristic</SelectItem>
+                                </SelectContent>
+                                </Select>
+                                <FormMessage />
+                            </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="numberOfSlides"
+                            render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Number of Slides</FormLabel>
+                                <FormControl>
+                                <Input type="number" min="1" max="10" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                            )}
+                        />
+                        </div>
+                        
+                        <FormField
+                            control={form.control}
+                            name="pdfTheme"
+                            render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Content PDF Theme</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormControl>
+                                    <SelectTrigger>
+                                    <SelectValue placeholder="Select a theme" />
+                                    </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                    {pdfThemes.map(theme => (
+                                    <SelectItem key={theme.name} value={theme.name}>
+                                        <div className="flex items-center gap-2">
+                                        <div className={`w-4 h-4 rounded-full border ${theme.swatch}`}></div>
+                                        <span>{theme.name}</span>
+                                        </div>
+                                    </SelectItem>
+                                    ))}
+                                </SelectContent>
+                                </Select>
+                                <FormMessage />
+                            </FormItem>
+                            )}
+                        />
+
+                        <Collapsible>
+                            <CollapsibleTrigger asChild>
+                                <Button variant="link" className="p-0 h-auto text-primary">
+                                    <ChevronDown className="h-4 w-4 mr-2" />
+                                    Add Optional Title Page Details
+                                </Button>
+                            </CollapsibleTrigger>
+                            <CollapsibleContent className="space-y-4 pt-4 animate-accordion-down">
                             <FormField
-                                control={form.control}
-                                name="department"
-                                render={({ field }) => (
+                                    control={form.control}
+                                    name="titlePageTheme"
+                                    render={({ field }) => (
                                     <FormItem>
-                                    <FormLabel>Department</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="e.g., Dept. of Computer Science" {...field} />
-                                    </FormControl>
-                                    </FormItem>
-                                )}
-                            />
-                        </div>
-                        <FormField
-                            control={form.control}
-                            name="submittedTo"
-                            render={({ field }) => (
-                                <FormItem>
-                                <FormLabel>Submitted To</FormLabel>
-                                <FormControl>
-                                    <Textarea placeholder="Enter names, one per line" {...field} rows={3}/>
-                                </FormControl>
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="submittedBy"
-                            render={({ field }) => (
-                                <FormItem>
-                                <FormLabel>Submitted By</FormLabel>
-                                <FormControl>
-                                    <Textarea placeholder="Enter names, one per line" {...field} rows={3}/>
-                                </FormControl>
-                                </FormItem>
-                            )}
-                        />
-                        <FormItem>
-                            <FormLabel>Logo (Optional)</FormLabel>
-                            <FormControl>
-                                <div className="flex items-center gap-4">
-                                <label htmlFor="logo-upload" className="flex-grow">
-                                    <div className="flex items-center justify-center w-full h-12 border-2 border-dashed rounded-md cursor-pointer hover:border-primary">
-                                        <Upload className="h-5 w-5 text-muted-foreground mr-2"/>
-                                        <span className="text-sm text-muted-foreground">Upload Logo</span>
-                                    </div>
-                                    <Input id="logo-upload" type="file" accept="image/*" onChange={handleLogoChange} className="sr-only" />
-                                </label>
-                                {logoPreview && <Image src={logoPreview} alt="logo preview" width={48} height={48} className="object-contain rounded-md border p-1" />}
+                                        <FormLabel>Title Page Theme</FormLabel>
+                                        <Select onValueChange={field.onChange} value={field.value || ''}>
+                                            <FormControl>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Select a theme (defaults to content theme)" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                {pdfThemes.map(theme => (
+                                                <SelectItem key={theme.name} value={theme.name}>
+                                                    <div className="flex items-center gap-2">
+                                                    <div className={`w-4 h-4 rounded-full border ${theme.swatch}`}></div>
+                                                    <span>{theme.name}</span>
+                                                    </div>
+                                                </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <FormField
+                                        control={form.control}
+                                        name="institute"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                            <FormLabel>Institute/Company</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="e.g., RV Institute of Technology" {...field} />
+                                            </FormControl>
+                                            </FormItem>
+                                        )}
+                                        />
+                                    <FormField
+                                        control={form.control}
+                                        name="department"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                            <FormLabel>Department</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="e.g., Dept. of Computer Science" {...field} />
+                                            </FormControl>
+                                            </FormItem>
+                                        )}
+                                    />
                                 </div>
-                            </FormControl>
-                        </FormItem>
-                    </CollapsibleContent>
-                </Collapsible>
+                                <FormField
+                                    control={form.control}
+                                    name="submittedTo"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                        <FormLabel>Submitted To</FormLabel>
+                                        <FormControl>
+                                            <Textarea placeholder="Enter names, one per line" {...field} rows={3}/>
+                                        </FormControl>
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="submittedBy"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                        <FormLabel>Submitted By</FormLabel>
+                                        <FormControl>
+                                            <Textarea placeholder="Enter names, one per line" {...field} rows={3}/>
+                                        </FormControl>
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormItem>
+                                    <FormLabel>Logo (Optional)</FormLabel>
+                                    <FormControl>
+                                        <div className="flex items-center gap-4">
+                                        <label htmlFor="logo-upload" className="flex-grow">
+                                            <div className="flex items-center justify-center w-full h-12 border-2 border-dashed rounded-md cursor-pointer hover:border-primary">
+                                                <Upload className="h-5 w-5 text-muted-foreground mr-2"/>
+                                                <span className="text-sm text-muted-foreground">Upload Logo</span>
+                                            </div>
+                                            <Input id="logo-upload" type="file" accept="image/*" onChange={handleLogoChange} className="sr-only" />
+                                        </label>
+                                        {logoPreview && <Image src={logoPreview} alt="logo preview" width={48} height={48} className="object-contain rounded-md border p-1" />}
+                                        </div>
+                                    </FormControl>
+                                </FormItem>
+                            </CollapsibleContent>
+                        </Collapsible>
 
 
-                <Button type="submit" disabled={isLoading} className="w-full">
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Generating...
-                    </>
-                  ) : "Generate Presentation"}
-                </Button>
-              </form>
-            </Form>
-          </CardContent>
-        </Card>
-      </div>
-
-      {isLoading && (
-        <div className="text-center py-16">
-          <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto" />
-          <p className="mt-4 text-muted-foreground">Generating your presentation. This may take a moment...</p>
+                        <Button type="submit" disabled={isLoading} size="lg" className="w-full">
+                        {isLoading ? (
+                            <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Generating...
+                            </>
+                        ) : "Generate Presentation"}
+                        </Button>
+                    </form>
+                    </Form>
+                </CardContent>
+            </Card>
         </div>
-      )}
-      
-      {slides.length > 0 && (
-        <div className="mt-16">
-          <div className="max-w-4xl mx-auto space-y-8">
-              {slides.map((slide, index) => (
-                <Card key={index} className="glass overflow-hidden slide-card">
-                  <CardHeader>
-                    <CardTitle className="flex justify-between items-center">
-                        <span>{index + 1}. {slide.title}</span>
-                        <div className="flex items-center gap-2">
-                            <Button 
-                                variant="ghost" 
-                                size="icon"
-                                onClick={() => handleContentModification(index, 'expand')}
-                                disabled={contentModifyingIndex === index}
-                                title="Expand Content"
+
+        {/* Right Column: Results */}
+        <div className="space-y-8">
+            {isLoading && (
+            <Card className="glass flex items-center justify-center h-96">
+                <div className="text-center">
+                    <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto" />
+                    <p className="mt-4 text-muted-foreground text-lg">Generating your presentation...</p>
+                    <p className="text-muted-foreground text-sm">This may take a few moments.</p>
+                </div>
+            </Card>
+            )}
+            
+            {slides.length > 0 && (
+                <>
+                <Card className="glass">
+                    <CardHeader>
+                        <CardTitle>Your Slides</CardTitle>
+                        <CardDescription>Review your generated slides below. You can edit content, regenerate images, and then download the final PDF.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="flex justify-center items-center gap-4">
+                        <Button onClick={() => setIsPreviewOpen(true)} disabled={isLoading}>
+                            <Eye className="mr-2 h-4 w-4" />
+                            Preview PDF
+                        </Button>
+                    </CardContent>
+                </Card>
+
+                {slides.map((slide, index) => (
+                    <Card key={index} className="glass overflow-hidden slide-card">
+                    <CardHeader>
+                        <CardTitle className="flex justify-between items-center text-xl">
+                            <span>{index + 1}. {slide.title}</span>
+                            <div className="flex items-center gap-1">
+                                <Button 
+                                    variant="ghost" 
+                                    size="icon"
+                                    onClick={() => handleContentModification(index, 'expand')}
+                                    disabled={contentModifyingIndex === index}
+                                    title="Expand Content"
+                                    className="h-8 w-8"
+                                >
+                                    {contentModifyingIndex === index ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowDown className="h-4 w-4" />}
+                                </Button>
+                                <Button 
+                                    variant="ghost" 
+                                    size="icon"
+                                    onClick={() => handleContentModification(index, 'shorten')}
+                                    disabled={contentModifyingIndex === index}
+                                    title="Shorten Content"
+                                    className="h-8 w-8"
+                                >
+                                    {contentModifyingIndex === index ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowUp className="h-4 w-4" />}
+                                </Button>
+                            </div>
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+                        <ul className="list-disc list-inside space-y-2 text-foreground/80 text-sm">
+                        {slide.content.map((point, i) => (
+                            <li key={i}>{point}</li>
+                        ))}
+                        </ul>
+
+                        <div className="space-y-4">
+                            {slide.image ? (
+                                <div className="relative aspect-video">
+                                    <Image src={slide.image} alt={`Slide ${index + 1} image`} fill={true} style={{objectFit:'cover'}} className="rounded-lg border" />
+                                </div>
+                            ) : (
+                                <div className="relative aspect-video flex items-center justify-center bg-muted/30 rounded-lg border-2 border-dashed">
+                                    <p className="text-muted-foreground">No image generated</p>
+                                </div>
+                            )}
+                            <Button
+                                variant="secondary"
+                                className="w-full"
+                                onClick={() => handleGenerateOrRegenerateImage(index)}
+                                disabled={regeneratingIndex === index}
                             >
-                                {contentModifyingIndex === index ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowDown className="h-4 w-4" />}
-                            </Button>
-                             <Button 
-                                variant="ghost" 
-                                size="icon"
-                                onClick={() => handleContentModification(index, 'shorten')}
-                                disabled={contentModifyingIndex === index}
-                                title="Shorten Content"
-                            >
-                                {contentModifyingIndex === index ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowUp className="h-4 w-4" />}
+                                {regeneratingIndex === index ? (
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                ) : (slide.image ? <RefreshCw className="mr-2 h-4 w-4" /> : <Wand2 className="mr-2 h-4 w-4" />)}
+                                {regeneratingIndex === index ? 'Generating...' : (slide.image ? 'Regenerate Image' : 'Generate Image')}
                             </Button>
                         </div>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-                    <div className="space-y-4">
-                      <ul className="list-disc list-inside space-y-2 text-foreground/80">
-                        {slide.content.map((point, i) => (
-                          <li key={i}>{point}</li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    <div className="space-y-4">
-                        {slide.image ? (
-                            <div className="relative aspect-video">
-                                <Image src={slide.image} alt={`Slide ${index + 1} image`} fill={true} style={{objectFit: 'cover'}} className="rounded-lg border" />
-                            </div>
-                        ) : (
-                            <div className="relative aspect-video flex items-center justify-center bg-muted/30 rounded-lg border-2 border-dashed">
-                                <p className="text-muted-foreground">No image generated</p>
-                            </div>
-                        )}
-                        <Button
-                            variant="secondary"
-                            className="w-full"
-                            onClick={() => handleGenerateOrRegenerateImage(index)}
-                            disabled={regeneratingIndex === index}
-                        >
-                            {regeneratingIndex === index ? (
-                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            ) : (slide.image ? <RefreshCw className="mr-2 h-4 w-4" /> : <Wand2 className="mr-2 h-4 w-4" />)}
-                            {regeneratingIndex === index ? 'Generating...' : (slide.image ? 'Regenerate Image' : 'Generate Image')}
-                        </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-          </div>
-           <div className="flex justify-center items-center gap-4 mt-8">
-              <Button onClick={() => setIsPreviewOpen(true)} disabled={isLoading}>
-                    <Eye className="mr-2 h-4 w-4" />
-                    Preview PDF
-              </Button>
-            </div>
+                    </CardContent>
+                    </Card>
+                ))}
+                </>
+            )}
         </div>
-      )}
+
+    </div>
     </div>
     </div>
 
     <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
-        <DialogContent className="max-w-7xl w-full h-[90vh] flex flex-col p-0">
+        <DialogContent className="max-w-7xl w-full h-[90vh] flex flex-col p-0 glass">
             <DialogHeader className="p-4 border-b">
                 <DialogTitle>PDF Preview</DialogTitle>
+                <DialogClose asChild>
+                    <button className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
+                        <X className="h-4 w-4" />
+                        <span className="sr-only">Close</span>
+                    </button>
+                </DialogClose>
             </DialogHeader>
-            <div className="flex-grow overflow-auto bg-gray-800 p-8">
+            <div className="flex-grow overflow-auto bg-background/50 p-8">
                 <div className="w-[1280px] mx-auto scale-[0.7] -translate-y-[15%] origin-top">
                     {isPreviewOpen && <PreviewSlides />}
                 </div>
             </div>
-            <DialogFooter className="p-4 border-t">
+            <DialogFooter className="p-4 border-t !justify-between">
                 <DialogClose asChild>
                     <Button variant="outline">Close</Button>
                 </DialogClose>
