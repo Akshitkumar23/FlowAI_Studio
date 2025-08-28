@@ -13,23 +13,25 @@ interface FeatureCardProps {
 
 export function FeatureCard({ title, description, href, icon }: FeatureCardProps) {
   return (
-    <Card className="h-full glass border-border/50 transition-all duration-300 ease-in-out hover:scale-105 hover:border-primary/50 hover:shadow-2xl hover:shadow-primary/20 flex flex-col">
-      <CardHeader>
-        <div className="p-3 bg-background rounded-lg border w-fit">
-          {icon}
-        </div>
-      </CardHeader>
-      <CardContent className="flex flex-col flex-grow">
-        <CardTitle className="text-xl font-bold tracking-tight">{title}</CardTitle>
-        <p className="mt-2 text-foreground/70 text-sm flex-grow">
-          {description}
-        </p>
-        <div className="mt-4">
-          <Button asChild variant="secondary" className="w-full">
-            <Link href={href}>Go to {title}</Link>
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
+    <Link href={href} className="h-full flex flex-col group">
+        <Card className="h-full glass border-border/50 transition-all duration-300 ease-in-out group-hover:scale-105 group-hover:border-primary/50 group-hover:shadow-2xl group-hover:shadow-primary/20 flex flex-col">
+        <CardHeader>
+            <div className="p-3 bg-background rounded-lg border w-fit">
+            {icon}
+            </div>
+        </CardHeader>
+        <CardContent className="flex flex-col flex-grow">
+            <CardTitle className="text-xl font-bold tracking-tight">{title}</CardTitle>
+            <p className="mt-2 text-foreground/70 text-sm flex-grow">
+            {description}
+            </p>
+            <div className="mt-4">
+            <Button variant="secondary" className="w-full">
+                Go to {title}
+            </Button>
+            </div>
+        </CardContent>
+        </Card>
+    </Link>
   );
 }
