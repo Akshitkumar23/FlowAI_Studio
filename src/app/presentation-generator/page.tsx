@@ -24,6 +24,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogC
 const formSchema = z.object({
   topic: z.string().min(3, "Topic must be at least 3 characters long."),
   style: z.string().min(1, "Please select a style."),
+  writingStyle: z.string().optional(),
   pdfTheme: z.string().min(1, "Please select a PDF theme."),
   titlePageTheme: z.string().optional(),
   numberOfSlides: z.coerce.number().min(1, "Number of slides must be at least 1.").max(10, "Number of slides cannot exceed 10."),
@@ -70,6 +71,7 @@ export default function PresentationGeneratorPage() {
     defaultValues: {
       topic: "",
       style: "Professional",
+      writingStyle: "Professional",
       pdfTheme: "Standard",
       titlePageTheme: "",
       numberOfSlides: 3,
@@ -163,6 +165,7 @@ export default function PresentationGeneratorPage() {
             topic: form.getValues("topic"),
             slides: slides,
             feedback: directorFeedback,
+            writingStyle: form.getValues("writingStyle"),
         };
         const response = await revisePresentation(input);
         
@@ -362,47 +365,71 @@ export default function PresentationGeneratorPage() {
                         />
                         <FormField
                             control={form.control}
-                            name="numberOfSlides"
+                            name="writingStyle"
                             render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Number of Slides</FormLabel>
-                                <FormControl>
-                                <Input type="number" min="1" max="10" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                            )}
-                        />
-                        </div>
-                        
-                        <FormField
-                            control={form.control}
-                            name="pdfTheme"
-                            render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Content PDF Theme</FormLabel>
+                                <FormLabel>Writing Style</FormLabel>
                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                                 <FormControl>
                                     <SelectTrigger>
-                                    <SelectValue placeholder="Select a theme" />
+                                    <SelectValue placeholder="Select a style" />
                                     </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
-                                    {pdfThemes.map(theme => (
-                                    <SelectItem key={theme.name} value={theme.name}>
-                                        <div className="flex items-center gap-2">
-                                        <div className={`w-4 h-4 rounded-full border ${theme.swatch}`}></div>
-                                        <span>{theme.name}</span>
-                                        </div>
-                                    </SelectItem>
-                                    ))}
+                                    <SelectItem value="Professional">Professional</SelectItem>
+                                    <SelectItem value="Casual">Casual</SelectItem>
+                                    <SelectItem value="Creative">Creative</SelectItem>
+                                    <SelectItem value="Technical">Technical</SelectItem>
                                 </SelectContent>
                                 </Select>
                                 <FormMessage />
                             </FormItem>
                             )}
                         />
-
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <FormField
+                                control={form.control}
+                                name="numberOfSlides"
+                                render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Number of Slides</FormLabel>
+                                    <FormControl>
+                                    <Input type="number" min="1" max="10" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="pdfTheme"
+                                render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Content PDF Theme</FormLabel>
+                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                        <SelectTrigger>
+                                        <SelectValue placeholder="Select a theme" />
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        {pdfThemes.map(theme => (
+                                        <SelectItem key={theme.name} value={theme.name}>
+                                            <div className="flex items-center gap-2">
+                                            <div className={`w-4 h-4 rounded-full border ${theme.swatch}`}></div>
+                                            <span>{theme.name}</span>
+                                            </div>
+                                        </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                </FormItem>
+                                )}
+                            />
+                        </div>
+                        
                         <Collapsible>
                             <CollapsibleTrigger asChild>
                                 <Button variant="link" className="p-0 h-auto text-primary">
@@ -548,67 +575,69 @@ export default function PresentationGeneratorPage() {
                     </CardContent>
                 </Card>
 
-                {slides.map((slide, index) => (
-                    <Card key={index} className="glass overflow-hidden slide-card">
-                    <CardHeader>
-                        <CardTitle className="flex justify-between items-center text-xl">
-                            <span>{index + 1}. {slide.title}</span>
-                            <div className="flex items-center gap-1">
-                                <Button 
-                                    variant="ghost" 
-                                    size="icon"
-                                    onClick={() => handleContentModification(index, 'expand')}
-                                    disabled={contentModifyingIndex === index}
-                                    title="Expand Content"
-                                    className="h-8 w-8"
+                <div className="space-y-4">
+                    {slides.map((slide, index) => (
+                        <Card key={index} className="glass overflow-hidden slide-card">
+                        <CardHeader>
+                            <CardTitle className="flex justify-between items-center text-xl">
+                                <span>{index + 1}. {slide.title}</span>
+                                <div className="flex items-center gap-1">
+                                    <Button 
+                                        variant="ghost" 
+                                        size="icon"
+                                        onClick={() => handleContentModification(index, 'expand')}
+                                        disabled={contentModifyingIndex === index}
+                                        title="Expand Content"
+                                        className="h-8 w-8"
+                                    >
+                                        {contentModifyingIndex === index ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowDown className="h-4 w-4" />}
+                                    </Button>
+                                    <Button 
+                                        variant="ghost" 
+                                        size="icon"
+                                        onClick={() => handleContentModification(index, 'shorten')}
+                                        disabled={contentModifyingIndex === index}
+                                        title="Shorten Content"
+                                        className="h-8 w-8"
+                                    >
+                                        {contentModifyingIndex === index ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowUp className="h-4 w-4" />}
+                                    </Button>
+                                </div>
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+                            <ul className="list-disc list-inside space-y-2 text-foreground/80 text-sm">
+                            {slide.content.map((point, i) => (
+                                <li key={i}>{point}</li>
+                            ))}
+                            </ul>
+
+                            <div className="space-y-4">
+                                {slide.image ? (
+                                    <div className="relative aspect-video">
+                                        <Image src={slide.image} alt={`Slide ${index + 1} image`} fill={true} style={{objectFit:'cover'}} className="rounded-lg border" />
+                                    </div>
+                                ) : (
+                                    <div className="relative aspect-video flex items-center justify-center bg-muted/30 rounded-lg border-2 border-dashed">
+                                        <p className="text-muted-foreground">No image generated</p>
+                                    </div>
+                                )}
+                                <Button
+                                    variant="secondary"
+                                    className="w-full"
+                                    onClick={() => handleGenerateOrRegenerateImage(index)}
+                                    disabled={regeneratingIndex === index}
                                 >
-                                    {contentModifyingIndex === index ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowDown className="h-4 w-4" />}
-                                </Button>
-                                <Button 
-                                    variant="ghost" 
-                                    size="icon"
-                                    onClick={() => handleContentModification(index, 'shorten')}
-                                    disabled={contentModifyingIndex === index}
-                                    title="Shorten Content"
-                                    className="h-8 w-8"
-                                >
-                                    {contentModifyingIndex === index ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowUp className="h-4 w-4" />}
+                                    {regeneratingIndex === index ? (
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    ) : (slide.image ? <RefreshCw className="mr-2 h-4 w-4" /> : <Wand2 className="mr-2 h-4 w-4" />)}
+                                    {regeneratingIndex === index ? 'Generating...' : (slide.image ? 'Regenerate Image' : 'Generate Image')}
                                 </Button>
                             </div>
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-                        <ul className="list-disc list-inside space-y-2 text-foreground/80 text-sm">
-                        {slide.content.map((point, i) => (
-                            <li key={i}>{point}</li>
-                        ))}
-                        </ul>
-
-                        <div className="space-y-4">
-                            {slide.image ? (
-                                <div className="relative aspect-video">
-                                    <Image src={slide.image} alt={`Slide ${index + 1} image`} fill={true} style={{objectFit:'cover'}} className="rounded-lg border" />
-                                </div>
-                            ) : (
-                                <div className="relative aspect-video flex items-center justify-center bg-muted/30 rounded-lg border-2 border-dashed">
-                                    <p className="text-muted-foreground">No image generated</p>
-                                </div>
-                            )}
-                            <Button
-                                variant="secondary"
-                                className="w-full"
-                                onClick={() => handleGenerateOrRegenerateImage(index)}
-                                disabled={regeneratingIndex === index}
-                            >
-                                {regeneratingIndex === index ? (
-                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                ) : (slide.image ? <RefreshCw className="mr-2 h-4 w-4" /> : <Wand2 className="mr-2 h-4 w-4" />)}
-                                {regeneratingIndex === index ? 'Generating...' : (slide.image ? 'Regenerate Image' : 'Generate Image')}
-                            </Button>
-                        </div>
-                    </CardContent>
-                    </Card>
-                ))}
+                        </CardContent>
+                        </Card>
+                    ))}
+                </div>
                 
                 <Card className="glass">
                     <CardHeader>
@@ -683,5 +712,3 @@ export default function PresentationGeneratorPage() {
     </>
   );
 }
-
-    

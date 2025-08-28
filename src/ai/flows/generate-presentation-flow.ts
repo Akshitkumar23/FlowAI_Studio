@@ -26,7 +26,8 @@ import type { RevisePresentationInput, RevisePresentationOutput } from '@/ai/sch
 
 const GeneratePresentationInputSchema = z.object({
   topic: z.string().describe('The topic of the presentation.'),
-  style: z.string().describe('The desired style of the presentation.'),
+  style: z.string().describe('The desired visual style of the presentation images.'),
+  writingStyle: z.string().optional().describe('The desired writing style for the text content.'),
   numberOfSlides: z.number().int().min(1).describe('The number of slides to generate.'),
 });
 export type GeneratePresentationInput = z.infer<typeof GeneratePresentationInputSchema>;
@@ -57,13 +58,14 @@ const generatePresentationStructurePrompt = ai.definePrompt({
   name: 'generatePresentationStructurePrompt',
   input: {schema: GeneratePresentationInputSchema},
   output: {schema: PresentationStructureSchema},
-  prompt: `You are an expert presentation creator. Your job is to generate a structured presentation with exactly {{{numberOfSlides}}} slides based on the user's topic and style.
+  prompt: `You are an expert presentation creator. Your job is to generate a structured presentation with exactly {{{numberOfSlides}}} slides based on the user's topic, style, and writing style.
 
   For each slide, provide a concise title and 3-4 detailed and insightful bullet points. Each bullet point should be a complete sentence and provide meaningful information. The content should be simple, clear, and directly related to the slide's title.
   The overall presentation should have a logical flow, starting with an introduction and ending with a conclusion or summary.
 
   Topic: {{{topic}}}
-  Style: {{{style}}}
+  Visual Style: {{{style}}}
+  Writing Style: {{{writingStyle}}}
   Number of Slides: {{{numberOfSlides}}}
 
   The presentation structure should be returned in JSON format.
@@ -193,6 +195,7 @@ const revisePresentationPrompt = ai.definePrompt({
     Adhere to the user's feedback as closely as possible.
 
     Original Topic: {{{topic}}}
+    Writing Style: {{{writingStyle}}}
     
     User Feedback: "{{{feedback}}}"
 

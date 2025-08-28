@@ -17,6 +17,7 @@ export type Slide = z.infer<typeof SlideSchema>;
 
 export const RevisePresentationInputSchema = z.object({
     topic: z.string(),
+    writingStyle: z.string().optional(),
     slides: z.array(SlideSchema),
     feedback: z.string().describe("The user's feedback on what to change about the presentation."),
 });
