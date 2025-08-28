@@ -14,6 +14,8 @@
  * - ExpandSlideContentInput - The input type for the expandSlideContent function.
  * - shortenSlideContent - Takes slide content and makes it more concise.
  * - ShortenSlideContentInput - The input type for the shortenSlideContent function.
+ * - revisePresentation - Revises an entire presentation based on user feedback.
+ * - RevisePresentationInput - The input type for the revisePresentation function.
  */
 
 import {ai} from '@/ai/genkit';
@@ -175,4 +177,65 @@ export async function expandSlideContent(input: ExpandSlideContentInput): Promis
 export async function shortenSlideContent(input: ShortenSlideContentInput): Promise<SlideContentOutput> {
   const {output} = await shortenContentPrompt(input);
   return output!;
+}
+
+
+// AI Director - Revise Presentation
+export const RevisePresentationInputSchema = z.object({
+    topic: z.string(),
+    slides: z.array(SlideSchema),
+    feedback: z.string().describe("The user's feedback on what to change about the presentation."),
+});
+export type RevisePresentationInput = z.infer<typeof RevisePresentationInputSchema>;
+
+export const RevisePresentationOutputSchema = z.object({
+    slides: z.array(SlideSchema),
+});
+export type RevisePresentationOutput = z.infer<typeof RevisePresentationOutputSchema>;
+
+const revisePresentationPrompt = ai.definePrompt({
+    name: 'revisePresentationPrompt',
+    input: { schema: RevisePresentationInputSchema },
+    output: { schema: RevisePresentationOutputSchema },
+    prompt: `You are an AI Presentation Director.
+    Your task is to revise an existing presentation based on user feedback.
+    You can add, remove, or edit slides. You can change titles, content, and the overall structure.
+    Adhere to the user's feedback as closely as possible.
+
+    Original Topic: {{{topic}}}
+    
+    User Feedback: "{{{feedback}}}"
+
+    Current Presentation Slides:
+    {{#each slides}}
+    Slide {{@index + 1}}:
+    Title: {{this.title}}
+    Content:
+    {{#each this.content}}
+    - {{this}}
+    {{/each}}
+    ---
+    {{/each}}
+
+    Please provide the full, revised presentation in the correct JSON format.
+    `
+});
+
+const revisePresentationFlow = ai.defineFlow(
+    {
+        name: 'revisePresentationFlow',
+        inputSchema: RevisePresentationInputSchema,
+        outputSchema: RevisePresentationOutputSchema,
+    },
+    async (input) => {
+        const { output } = await revisePresentationPrompt(input);
+        if (!output) {
+            throw new Error('Could not revise presentation.');
+        }
+        return output;
+    }
+);
+
+export async function revisePresentation(input: RevisePresentationInput): Promise<RevisePresentationOutput> {
+    return revisePresentationFlow(input);
 }

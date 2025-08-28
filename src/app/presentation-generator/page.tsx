@@ -1,7 +1,7 @@
 
 "use client";
 
-import { generatePresentation, regenerateSlideImage, expandSlideContent, shortenSlideContent, GenerateSlideImageInput } from "@/ai/flows/generate-presentation-flow";
+import { generatePresentation, regenerateSlideImage, expandSlideContent, shortenSlideContent, revisePresentation, GenerateSlideImageInput, RevisePresentationInput } from "@/ai/flows/generate-presentation-flow";
 import type { Slide } from "@/ai/schemas";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,7 +9,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, RefreshCw, Download, Wand2, ArrowUp, ArrowDown, ChevronDown, Upload, Eye, X, FileSignature } from "lucide-react";
+import { Loader2, RefreshCw, Download, Wand2, ArrowUp, ArrowDown, ChevronDown, Upload, Eye, X, FileSignature, MessageCircle } from "lucide-react";
 import Image from "next/image";
 import { useState, useRef, useCallback } from "react";
 import { useForm } from "react-hook-form";
@@ -62,6 +62,8 @@ export default function PresentationGeneratorPage() {
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const previewContainerRef = useRef<HTMLDivElement>(null);
+  const [isRevising, setIsRevising] = useState(false);
+  const [directorFeedback, setDirectorFeedback] = useState("");
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -153,6 +155,33 @@ export default function PresentationGeneratorPage() {
     }
   }
 
+  const handleDirectorSubmit = async () => {
+    if (!directorFeedback) return;
+    setIsRevising(true);
+    try {
+        const input: RevisePresentationInput = {
+            topic: form.getValues("topic"),
+            slides: slides,
+            feedback: directorFeedback,
+        };
+        const response = await revisePresentation(input);
+        
+        // Mark existing images for carry-over
+        const finalSlides = response.slides.map((newSlide, index) => ({
+            ...newSlide,
+            image: slides[index]?.image, // Keep old image for now
+        }));
+        setSlides(finalSlides);
+        setDirectorFeedback("");
+
+    } catch (error) {
+        console.error("Error revising presentation:", error);
+        alert("Failed to revise presentation. Please try again.");
+    } finally {
+        setIsRevising(false);
+    }
+  }
+
   const generateAndDownloadPdf = async () => {
     if (!previewContainerRef.current) return;
     setIsProcessingPdf(true);
@@ -180,7 +209,7 @@ export default function PresentationGeneratorPage() {
                 img.onload = () => resolve();
                 img.onerror = () => {
                   console.error(`Failed to load image for PDF: ${img.src}`);
-                  resolve(); // Resolve even on error
+                  resolve();
                 }
               }
             })
@@ -508,10 +537,30 @@ export default function PresentationGeneratorPage() {
                 <>
                 <Card className="glass">
                     <CardHeader>
-                        <CardTitle>Your Slides</CardTitle>
+                        <CardTitle className="flex items-center gap-2">
+                           <MessageCircle className="text-primary"/>
+                           AI Director
+                        </CardTitle>
                         <CardDescription>Review your generated slides below. You can edit content, regenerate images, and then download the final PDF.</CardDescription>
                     </CardHeader>
-                    <CardContent className="flex justify-center items-center gap-4">
+                    <CardContent>
+                       <div className="space-y-4">
+                            <Textarea 
+                                placeholder="e.g., 'Make it more professional' or 'Add a slide about financial risks'"
+                                value={directorFeedback}
+                                onChange={(e) => setDirectorFeedback(e.target.value)}
+                                rows={3}
+                            />
+                            <Button onClick={handleDirectorSubmit} disabled={isRevising || !directorFeedback} className="w-full">
+                                {isRevising ? (
+                                    <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Revising...</>
+                                ) : (
+                                    "Submit Feedback"
+                                )}
+                            </Button>
+                       </div>
+                    </CardContent>
+                    <CardContent className="flex justify-center items-center gap-4 pt-4 border-t">
                         <Button onClick={() => setIsPreviewOpen(true)} disabled={isLoading}>
                             <Eye className="mr-2 h-4 w-4" />
                             Preview PDF
@@ -627,5 +676,3 @@ export default function PresentationGeneratorPage() {
     </>
   );
 }
-
-    
