@@ -198,7 +198,7 @@ const revisePresentationPrompt = ai.definePrompt({
 
     Current Presentation Slides:
     {{#each slides}}
-    Slide {{@index + 1}}:
+    Slide {{@index}}:
     Title: {{this.title}}
     Content:
     {{#each this.content}}
