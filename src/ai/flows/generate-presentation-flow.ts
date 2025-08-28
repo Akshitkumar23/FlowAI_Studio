@@ -20,7 +20,9 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
-import { SlideSchema } from '@/ai/schemas';
+import { SlideSchema, RevisePresentationInputSchema, RevisePresentationOutputSchema } from '@/ai/schemas';
+import type { RevisePresentationInput, RevisePresentationOutput } from '@/ai/schemas';
+
 
 const GeneratePresentationInputSchema = z.object({
   topic: z.string().describe('The topic of the presentation.'),
@@ -181,18 +183,6 @@ export async function shortenSlideContent(input: ShortenSlideContentInput): Prom
 
 
 // AI Director - Revise Presentation
-export const RevisePresentationInputSchema = z.object({
-    topic: z.string(),
-    slides: z.array(SlideSchema),
-    feedback: z.string().describe("The user's feedback on what to change about the presentation."),
-});
-export type RevisePresentationInput = z.infer<typeof RevisePresentationInputSchema>;
-
-export const RevisePresentationOutputSchema = z.object({
-    slides: z.array(SlideSchema),
-});
-export type RevisePresentationOutput = z.infer<typeof RevisePresentationOutputSchema>;
-
 const revisePresentationPrompt = ai.definePrompt({
     name: 'revisePresentationPrompt',
     input: { schema: RevisePresentationInputSchema },

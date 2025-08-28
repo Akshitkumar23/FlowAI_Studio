@@ -1,8 +1,8 @@
 
 "use client";
 
-import { generatePresentation, regenerateSlideImage, expandSlideContent, shortenSlideContent, revisePresentation, GenerateSlideImageInput, RevisePresentationInput } from "@/ai/flows/generate-presentation-flow";
-import type { Slide } from "@/ai/schemas";
+import { generatePresentation, regenerateSlideImage, expandSlideContent, shortenSlideContent, revisePresentation } from "@/ai/flows/generate-presentation-flow";
+import type { Slide, RevisePresentationInput } from "@/ai/schemas";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -118,7 +118,7 @@ export default function PresentationGeneratorPage() {
     const slide = slides[index];
     const values = form.getValues();
 
-    const input: GenerateSlideImageInput = {
+    const input = {
       topic: values.topic,
       style: values.style,
       slideTitle: slide.title,

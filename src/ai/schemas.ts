@@ -14,3 +14,15 @@ export const SlideSchema = z.object({
 });
 
 export type Slide = z.infer<typeof SlideSchema>;
+
+export const RevisePresentationInputSchema = z.object({
+    topic: z.string(),
+    slides: z.array(SlideSchema),
+    feedback: z.string().describe("The user's feedback on what to change about the presentation."),
+});
+export type RevisePresentationInput = z.infer<typeof RevisePresentationInputSchema>;
+
+export const RevisePresentationOutputSchema = z.object({
+    slides: z.array(SlideSchema),
+});
+export type RevisePresentationOutput = z.infer<typeof RevisePresentationOutputSchema>;
