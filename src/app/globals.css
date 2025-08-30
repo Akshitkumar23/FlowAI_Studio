@@ -33,6 +33,13 @@
     --ring: 180 100% 35%; /* Teal for rings */
 
     --radius: 0.5rem;
+
+    --sidebar-background: 240 50% 15%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-border: 240 20% 35%;
+    --sidebar-accent: 240 50% 18%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-ring: 180 100% 35%;
   }
 
   .dark {
@@ -56,6 +63,13 @@
     --border: 240 20% 35%;
     --input: 240 20% 35%;
     --ring: 180 100% 35%;
+
+    --sidebar-background: 240 50% 15%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-border: 240 20% 35%;
+    --sidebar-accent: 240 50% 18%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-ring: 180 100% 35%;
   }
 }
 
