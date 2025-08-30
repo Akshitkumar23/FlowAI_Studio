@@ -38,40 +38,24 @@ const menuItems = [
 
 const NavMenu = () => {
     return (
-        <>
-            {/* Mobile Menu */}
-            <div className="md:hidden">
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                            <Menu className="h-6 w-6"/>
-                            <span className="sr-only">Open menu</span>
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        {menuItems.map((item) => (
-                            <DropdownMenuItem key={item.href} asChild>
-                                <Link href={item.href}>
-                                    <item.icon className="mr-2 h-4 w-4" />
-                                    <span>{item.label}</span>
-                                </Link>
-                            </DropdownMenuItem>
-                        ))}
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            </div>
-            {/* Desktop Menu */}
-            <nav className="hidden md:flex items-center gap-2">
-                {menuItems.map(item => (
-                    <Button key={item.href} asChild variant="ghost" size="sm">
-                        <Link href={item.href} title={item.label}>
-                           <item.icon className="h-5 w-5" />
-                           <span className="sr-only">{item.label}</span>
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon">
+                    <Menu className="h-6 w-6"/>
+                    <span className="sr-only">Open menu</span>
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+                {menuItems.map((item) => (
+                    <DropdownMenuItem key={item.href} asChild>
+                        <Link href={item.href}>
+                            <item.icon className="mr-2 h-4 w-4" />
+                            <span>{item.label}</span>
                         </Link>
-                    </Button>
+                    </DropdownMenuItem>
                 ))}
-            </nav>
-        </>
+            </DropdownMenuContent>
+        </DropdownMenu>
     )
 }
 
