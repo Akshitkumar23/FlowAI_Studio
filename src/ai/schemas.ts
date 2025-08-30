@@ -37,13 +37,13 @@ const FeedbackItemSchema = z.object({
 
 export const AIDebrieferInputSchema = z.object({
   slides: z.array(SlideSchema).describe("The content of the presentation slides."),
-  script: z.string().describe("The speech script for the presentation."),
+  script: z.string().optional().describe("The speech script for the presentation. If not provided, a script will be generated."),
 });
 export type AIDebrieferInput = z.infer<typeof AIDebrieferInputSchema>;
 
 export const AIDebrieferOutputSchema = z.object({
-  overallScore: z.number().min(1).max(10).describe("An overall score for the presentation from 1 to 10."),
+  overallScore: z.number().min(0).max(10).describe("An overall score for the presentation from 0 to 10."),
   feedback: z.array(FeedbackItemSchema).describe("An array of constructive feedback items."),
-  revisedScript: z.string().describe("A revised, improved version of the speech script."),
+  revisedScript: z.string().describe("A revised or newly generated, improved version of the speech script."),
 });
 export type AIDebrieferOutput = z.infer<typeof AIDebrieferOutputSchema>;

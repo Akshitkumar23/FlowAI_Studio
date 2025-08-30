@@ -2,7 +2,7 @@
 'use server';
 
 /**
- * @fileOverview An AI debriefer that analyzes slide content and a speech script to provide feedback.
+ * @fileOverview An AI debriefer that analyzes slide content and an optional speech script to provide feedback and a revised/generated script.
  *
  * - aiDebriefer - A function that analyzes presentation content and provides feedback.
  * - AIDebrieferInput - The input type for the aiDebriefer function.
@@ -23,8 +23,9 @@ const aiDebrieferPrompt = ai.definePrompt({
   name: 'aiDebrieferPrompt',
   input: {schema: AIDebrieferInputSchema},
   output: {schema: AIDebrieferOutputSchema},
-  prompt: `You are an expert presentation coach and debriefer. Your task is to analyze the user's presentation content and speech script to provide constructive feedback.
-
+  prompt: `You are an expert presentation coach and debriefer. Your task is to analyze the user's presentation content.
+{{#if script}}
+You will also analyze the provided speech script.
 Analyze the following:
 1.  **Clarity and Conciseness:** Is the message clear? Is the language simple and easy to understand?
 2.  **Content-Slide Sync:** Does the script align well with the content on each slide? Does the speaker simply read the slides, or do they add value?
@@ -35,6 +36,18 @@ Based on your analysis, provide:
 - An overall score out of 10.
 - A list of specific, actionable feedback points. For each point, specify the category and, if applicable, the slide number it refers to.
 - A revised version of the script that incorporates your feedback and improves the overall quality of the presentation.
+
+Here is the user's speech script:
+"{{{script}}}"
+
+{{else}}
+The user has not provided a speech script. Your task is to generate a compelling and professional speech script that fits the provided slide content. The script should be engaging, clear, and perfectly aligned with each slide.
+
+Based on the slides, provide:
+- An overall score of 0, as no script was provided to score.
+- A list of feedback points explaining that you have generated a new script and outlining its key strengths (e.g., strong opening, clear explanations, engaging call to action).
+- The full, generated speech script.
+{{/if}}
 
 Here is the user's presentation content:
 
@@ -48,10 +61,8 @@ Content:
 ---
 {{/each}}
 
-Here is the user's speech script:
-"{{{script}}}"
 
-Provide your feedback now in the required JSON format.
+Provide your response in the required JSON format.
 `,
 });
 

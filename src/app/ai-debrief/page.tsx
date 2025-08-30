@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { aiDebriefer } from "@/ai/flows/ai-debrief-flow";
 import type { Slide, AIDebrieferOutput } from "@/ai/schemas";
-import { Loader2, Mic, Bot, Sparkles, CheckCircle, XCircle, BarChart, FileText } from "lucide-react";
+import { Loader2, Mic, Bot, Sparkles, CheckCircle, XCircle, BarChart, FileText, Info } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Progress } from "@/components/ui/progress";
 
@@ -39,8 +39,8 @@ export default function AIDebrieferPage() {
         setError(null);
         setResult(null);
 
-        if (!slidesText || !scriptText) {
-            setError("Please provide both slide content and the speech script.");
+        if (!slidesText) {
+            setError("Please provide the slide content.");
             return;
         }
 
@@ -66,7 +66,8 @@ export default function AIDebrieferPage() {
     const getScoreColor = (score: number) => {
         if (score >= 8) return 'text-green-500';
         if (score >= 5) return 'text-yellow-500';
-        return 'text-red-500';
+        if (score > 0) return 'text-red-500';
+        return 'text-gray-500';
     }
 
     const FeedbackIcon = ({ category }: { category: string }) => {
@@ -75,6 +76,7 @@ export default function AIDebrieferPage() {
             case 'content-slide sync': return <XCircle className="h-5 w-5 text-red-500" />;
             case 'structure': return <BarChart className="h-5 w-5 text-purple-500" />;
             case 'engagement': return <Sparkles className="h-5 w-5 text-yellow-500" />;
+            case 'script generation': return <Info className="h-5 w-5 text-green-500" />;
             default: return <FileText className="h-5 w-5 text-gray-500" />;
         }
     }
@@ -84,14 +86,16 @@ export default function AIDebrieferPage() {
             <div className="container py-8">
                 <PageHeader
                     title="AI Debriefer"
-                    description="Get expert feedback on your presentation's content and script to deliver with confidence."
+                    description="Get expert feedback on your presentation. Provide your slides and an optional script to get started."
                 />
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
                     <Card className="glass">
                         <CardHeader>
                             <CardTitle>Your Presentation</CardTitle>
-                            <CardDescription>Paste your slide content and script below for analysis.</CardDescription>
+                            <CardDescription>
+                                Paste your slide content below. If you provide a script, the AI will review it. If not, the AI will generate one for you.
+                            </CardDescription>
                         </CardHeader>
                         <CardContent>
                             <form onSubmit={handleSubmit} className="space-y-6">
@@ -104,13 +108,14 @@ export default function AIDebrieferPage() {
                                         onChange={(e) => setSlidesText(e.target.value)}
                                         rows={10}
                                         className="font-mono text-sm"
+                                        required
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="script-input">Speech Script</Label>
+                                    <Label htmlFor="script-input">Speech Script (Optional)</Label>
                                     <Textarea
                                         id="script-input"
-                                        placeholder="Paste your full speech script here."
+                                        placeholder="Paste your speech script here for a review, or leave it blank to get a new one generated."
                                         value={scriptText}
                                         onChange={(e) => setScriptText(e.target.value)}
                                         rows={10}
@@ -158,10 +163,16 @@ export default function AIDebrieferPage() {
                                 <div>
                                     <Label>Overall Score</Label>
                                     <div className="flex items-center gap-4 mt-2">
-                                        <div className={`text-4xl font-bold ${getScoreColor(result.overallScore)}`}>
-                                            {result.overallScore}<span className="text-2xl text-muted-foreground">/10</span>
-                                        </div>
-                                        <Progress value={result.overallScore * 10} className="w-full" />
+                                        {result.overallScore > 0 ? (
+                                            <>
+                                                <div className={`text-4xl font-bold ${getScoreColor(result.overallScore)}`}>
+                                                    {result.overallScore}<span className="text-2xl text-muted-foreground">/10</span>
+                                                </div>
+                                                <Progress value={result.overallScore * 10} className="w-full" />
+                                            </>
+                                        ) : (
+                                            <p className="text-muted-foreground">No script was provided to score. A new script has been generated for you.</p>
+                                        )}
                                     </div>
                                 </div>
                                 
@@ -186,7 +197,9 @@ export default function AIDebrieferPage() {
                                 </div>
 
                                 <div>
-                                    <h3 className="font-semibold mb-2">Revised Script Suggestion</h3>
+                                    <h3 className="font-semibold mb-2">
+                                        {scriptText ? 'Revised Script Suggestion' : 'Generated Script'}
+                                    </h3>
                                     <Card className="bg-background/50 max-h-80 overflow-y-auto">
                                         <CardContent className="p-4">
                                             <p className="text-sm whitespace-pre-wrap">{result.revisedScript}</p>
