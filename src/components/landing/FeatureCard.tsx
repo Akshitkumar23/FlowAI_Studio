@@ -25,10 +25,8 @@ export function FeatureCard({ title, description, href, icon, textColor }: Featu
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setIsInView(true);
-            observer.unobserve(entry.target);
-          }
+          // Set isInView to true when intersecting, false otherwise
+          setIsInView(entry.isIntersecting);
         });
       },
       { threshold: 0.1 }
