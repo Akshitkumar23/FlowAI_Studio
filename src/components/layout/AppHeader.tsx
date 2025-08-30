@@ -46,8 +46,8 @@ const NavMenu = () => {
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-                {menuItems.map((item) => (
-                    <DropdownMenuItem key={item.href} asChild>
+                {menuItems.map((item, index) => (
+                    <DropdownMenuItem key={item.href} asChild style={{ animationDelay: `${index * 50}ms` }}>
                         <Link href={item.href}>
                             <item.icon className="mr-2 h-4 w-4" />
                             <span>{item.label}</span>
