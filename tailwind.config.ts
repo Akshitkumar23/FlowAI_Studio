@@ -93,19 +93,25 @@ export default {
           to: { opacity: '1' },
         },
         'fade-in-up': {
-          from: { opacity: '0', transform: 'translateY(20px)' },
-          to: { opacity: '1', transform: 'translateY(0)' },
+          '0%': {
+            opacity: '0',
+            transform: 'translateY(24px)',
+          },
+          '100%': {
+            opacity: '1',
+            transform: 'translateY(0)',
+          },
         },
         'pulse-bg': {
-          '0%, 100%': { backgroundColor: 'hsl(var(--card) / 0.5)' },
-          '50%': { backgroundColor: 'hsl(var(--card) / 0.8)' },
+          '0%, 100%': { backgroundColor: 'hsla(var(--card), 0.5)' },
+          '50%': { backgroundColor: 'hsla(var(--card), 0.8)' },
         }
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
         'fade-in': 'fade-in 0.5s ease-in-out forwards',
-        'fade-in-up': 'fade-in-up 0.6s ease-in-out forwards',
+        'fade-in-up': 'fade-in-up 0.6s ease-out forwards',
         'pulse-bg': 'pulse-bg 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
       },
     },
