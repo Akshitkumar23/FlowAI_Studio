@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from 'next/link';
@@ -14,10 +15,9 @@ interface FeatureCardProps {
   href: string;
   icon: ReactNode;
   textColor: string;
-  actionText: string;
 }
 
-export function FeatureCard({ title, description, href, icon, textColor, actionText }: FeatureCardProps) {
+export function FeatureCard({ title, description, href, icon, textColor }: FeatureCardProps) {
   const [isInView, setIsInView] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
@@ -66,10 +66,11 @@ export function FeatureCard({ title, description, href, icon, textColor, actionT
           <p className="mt-2 text-foreground/70 text-sm flex-grow">
             {description}
           </p>
-          <Link href={href} className={cn("mt-4 font-semibold text-sm flex items-center gap-1 w-fit", textColor)}>
-              <span>{actionText}</span>
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-          </Link>
+          <Button asChild className="mt-4 w-full" variant="secondary">
+              <Link href={href}>
+                {title}
+              </Link>
+          </Button>
         </CardContent>
       </Card>
     </div>

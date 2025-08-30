@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { ArrowUpRight } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,28 +12,24 @@ const latestTools = [
     href: "https://www.anthropic.com/news/claude-3-5-sonnet",
     description: "A new benchmark for AI intelligence, setting new standards for graduate-level reasoning and speed.",
     icon: <ArrowUpRight className="w-10 h-10" />,
-    actionText: "Explore",
   },
   { 
     title: "Google Veo", 
     href: "https://deepmind.google/technologies/veo/",
     description: "Google's most advanced video generation model, creating high-quality, cinematic videos from text prompts.",
     icon: <ArrowUpRight className="w-10 h-10" />,
-    actionText: "Explore",
   },
   { 
     title: "Llama 3.1", 
     href: "https://ai.meta.com/blog/meta-llama-3-1/",
     description: "Meta's latest open-source LLM, offering powerful new capabilities and a massive context window for complex tasks.",
     icon: <ArrowUpRight className="w-10 h-10" />,
-    actionText: "Explore",
   },
   { 
     title: "Sora by OpenAI", 
     href: "https://openai.com/index/sora/",
     description: "The groundbreaking text-to-video model that can generate realistic and imaginative scenes from simple text instructions.",
     icon: <ArrowUpRight className="w-10 h-10" />,
-    actionText: "Explore",
   },
 ];
 
@@ -56,7 +53,6 @@ export function LatestAIToolsSection() {
                         href={tool.href}
                         icon={iconWithColor}
                         textColor={colorClass}
-                        actionText={tool.actionText}
                     />
                 );
             })}

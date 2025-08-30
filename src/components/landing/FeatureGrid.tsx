@@ -1,3 +1,4 @@
+
 import React from 'react';
 import {
   Presentation,
@@ -15,42 +16,36 @@ const features = [
     description: 'Generate a full presentation from a topic, including text and AI-generated images.',
     href: '/presentation-generator',
     icon: <Presentation className="w-10 h-10" />,
-    actionText: 'Go to Tool',
   },
   {
     title: 'Scene Preview Creator',
     description: 'Create stunning preview images from text prompts and optional reference images.',
     href: '/scene-preview',
     icon: <Clapperboard className="w-10 h-10" />,
-     actionText: 'Go to Tool',
   },
   {
     title: 'PPT Slide Enhancer',
     description: 'Redesign an existing slide or create a new one from text with content suggestions.',
     href: '/ppt-enhancer',
     icon: <Wand2 className="w-10 h-10" />,
-     actionText: 'Go to Tool',
   },
   {
     title: 'Prompt Enhancer',
     description: 'Transform your ideas into detailed, optimized prompts for superior AI results.',
     href: '/prompt-enhancer',
     icon: <Sparkles className="w-10 h-10" />,
-     actionText: 'Go to Tool',
   },
   {
     title: 'Creative Spark',
     description: 'Get random creative ideas and expand them into detailed paragraphs to kickstart your work.',
     href: '/creative-spark',
     icon: <Lightbulb className="w-10 h-10" />,
-     actionText: 'Go to Tool',
   },
   {
     title: 'Text-to-Speech',
     description: 'Convert text to speech with single-narrator or multi-speaker dialogue options.',
     href: '/text-to-speech',
     icon: <AudioLines className="w-10 h-10" />,
-     actionText: 'Go to Tool',
   },
 ];
 
