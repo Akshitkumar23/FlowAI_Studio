@@ -13,8 +13,8 @@
     --popover: 240 50% 15%;
     --popover-foreground: 0 0% 98%;
 
-    --primary: 300 100% 25%; /* Vibrant Purple */
-    --primary-foreground: 300 0% 100%;
+    --primary: 180 100% 25%; /* Bright Teal/Aqua */
+    --primary-foreground: 180 0% 100%;
 
     --secondary: 240 20% 25%;
     --secondary-foreground: 0 0% 98%;
@@ -22,8 +22,8 @@
     --muted: 240 20% 25%;
     --muted-foreground: 0 0% 63.9%;
 
-    --accent: 180 100% 25%; /* Bright Teal */
-    --accent-foreground: 180 0% 100%;
+    --accent: 300 100% 35%; /* Vibrant Purple for accents */
+    --accent-foreground: 300 0% 100%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
@@ -43,14 +43,14 @@
     --card-foreground: 0 0% 98%;
     --popover: 240 50% 15%;
     --popover-foreground: 0 0% 98%;
-    --primary: 300 100% 25%;
-    --primary-foreground: 300 0% 100%;
+    --primary: 180 100% 25%;
+    --primary-foreground: 180 0% 100%;
     --secondary: 240 20% 25%;
     --secondary-foreground: 0 0% 98%;
     --muted: 240 20% 25%;
     --muted-foreground: 0 0% 63.9%;
-    --accent: 180 100% 25%;
-    --accent-foreground: 180 0% 100%;
+    --accent: 300 100% 35%;
+    --accent-foreground: 300 0% 100%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
     --border: 240 20% 35%;
