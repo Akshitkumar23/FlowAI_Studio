@@ -584,7 +584,7 @@ export default function PresentationGeneratorPage() {
         {/* Right Column: Results */}
         <div className="space-y-8">
             {isLoading && (
-            <Card className="glass flex items-center justify-center h-96">
+            <Card className="glass flex items-center justify-center h-96 animate-pulse-bg">
                 <div className="text-center">
                     <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto" />
                     <p className="mt-4 text-muted-foreground text-lg">Generating your presentation...</p>

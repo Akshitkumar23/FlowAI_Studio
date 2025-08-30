@@ -346,7 +346,7 @@ export default function PptEnhancerPage() {
         </Card>
 
         {isLoading && (
-          <Card className="glass flex items-center justify-center h-64">
+          <Card className="glass flex items-center justify-center h-64 animate-pulse-bg">
             <div className="text-center">
               <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto" />
               <p className="mt-4 text-muted-foreground">AI is processing your request...</p>

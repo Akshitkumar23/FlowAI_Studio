@@ -43,7 +43,7 @@ export default function RootLayout({
         ) : (
           <>
             <AppHeader />
-            <main className="flex-grow">{children}</main>
+            <main className="flex-grow animate-fade-in">{children}</main>
             <Footer />
             <Toaster />
           </>
