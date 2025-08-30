@@ -10,28 +10,8 @@
  */
 
 import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
-import type {Slide} from '@/ai/schemas';
-import {SlideSchema} from '@/ai/schemas';
-
-const FeedbackItemSchema = z.object({
-  category: z.string().describe("The category of the feedback (e.g., Clarity, Content-Slide Sync, Structure, Engagement)."),
-  comment: z.string().describe("The specific feedback or suggestion."),
-  slideReference: z.number().optional().describe("The slide number the feedback refers to, if applicable."),
-});
-
-export const AIDebrieferInputSchema = z.object({
-  slides: z.array(SlideSchema).describe("The content of the presentation slides."),
-  script: z.string().describe("The speech script for the presentation."),
-});
-export type AIDebrieferInput = z.infer<typeof AIDebrieferInputSchema>;
-
-export const AIDebrieferOutputSchema = z.object({
-  overallScore: z.number().min(1).max(10).describe("An overall score for the presentation from 1 to 10."),
-  feedback: z.array(FeedbackItemSchema).describe("An array of constructive feedback items."),
-  revisedScript: z.string().describe("A revised, improved version of the speech script."),
-});
-export type AIDebrieferOutput = z.infer<typeof AIDebrieferOutputSchema>;
+import { AIDebrieferInputSchema, AIDebrieferOutputSchema } from '@/ai/schemas';
+import type { AIDebrieferInput, AIDebrieferOutput } from '@/ai/schemas';
 
 
 export async function aiDebriefer(input: AIDebrieferInput): Promise<AIDebrieferOutput> {
@@ -89,4 +69,3 @@ const aiDebrieferFlow = ai.defineFlow(
     return output;
   }
 );
-

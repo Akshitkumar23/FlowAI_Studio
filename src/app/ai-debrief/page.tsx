@@ -7,8 +7,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { aiDebriefer, AIDebrieferOutput } from "@/ai/flows/ai-debrief-flow";
-import type { Slide } from "@/ai/schemas";
+import { aiDebriefer } from "@/ai/flows/ai-debrief-flow";
+import type { Slide, AIDebrieferOutput } from "@/ai/schemas";
 import { Loader2, Mic, Bot, Sparkles, CheckCircle, XCircle, BarChart, FileText } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Progress } from "@/components/ui/progress";
