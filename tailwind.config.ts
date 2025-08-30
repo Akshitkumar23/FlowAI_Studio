@@ -121,6 +121,11 @@ export default {
                 transform: 'scale(1)',
             },
         },
+        'shake': {
+            '0%, 100%': { transform: 'translateX(0)' },
+            '25%': { transform: 'translateX(-5px)' },
+            '75%': { transform: 'translateX(5px)' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
@@ -130,6 +135,7 @@ export default {
         'pulse-bg': 'pulse-bg 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
         'fade-out': 'fade-out 0.5s ease-out forwards',
         'splash-pop-in': 'splash-pop-in 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards',
+        'shake': 'shake 0.2s ease-in-out',
       },
     },
   },
