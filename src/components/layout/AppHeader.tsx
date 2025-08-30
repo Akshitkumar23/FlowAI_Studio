@@ -29,7 +29,7 @@ export const FlowAILogo = (props: React.SVGProps<SVGSVGElement>) => (
 const menuItems = [
     { href: '/', icon: Home, label: 'Home' },
     { href: '/presentation-generator', icon: Presentation, label: 'Presentation Generator' },
-    { href: '/presentation-coach', icon: Mic, label: 'Presentation Coach' },
+    { href: '/ai-debrief', icon: Mic, label: 'AI Debriefer' },
     { href: '/scene-preview', icon: Clapperboard, label: 'Scene Preview' },
     { href: '/ppt-enhancer', icon: Wand2, label: 'PPT Enhancer' },
     { href: '/prompt-enhancer', icon: Sparkles, label: 'Prompt Enhancer' },

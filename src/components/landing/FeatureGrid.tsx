@@ -19,9 +19,9 @@ const features = [
     icon: <Presentation className="w-10 h-10" />,
   },
   {
-    title: 'Presentation Coach',
+    title: 'AI Debriefer',
     description: 'Get expert feedback on your presentation content and script to deliver with confidence.',
-    href: '/presentation-coach',
+    href: '/ai-debrief',
     icon: <Mic className="w-10 h-10" />,
   },
   {

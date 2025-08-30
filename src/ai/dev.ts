@@ -7,5 +7,5 @@ import '@/ai/flows/enhance-ppt-slide-flow.ts';
 import '@/ai/flows/generate-presentation-flow.ts';
 import '@/ai/flows/generate-video-image-flow.ts';
 import '@/ai/flows/enhance-prompt.ts';
-import '@/ai/flows/presentation-coach-flow.ts';
+import '@/ai/flows/ai-debrief-flow.ts';
 import '@types/wav';
