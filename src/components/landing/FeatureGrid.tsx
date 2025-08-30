@@ -7,7 +7,7 @@ import {
   Sparkles,
   Lightbulb,
   AudioLines,
-  Mic,
+  MessageSquareQuote,
 } from 'lucide-react';
 import { FeatureCard } from './FeatureCard';
 
@@ -17,12 +17,6 @@ const features = [
     description: 'Generate a full presentation from a topic, including text and AI-generated images.',
     href: '/presentation-generator',
     icon: <Presentation className="w-10 h-10" />,
-  },
-  {
-    title: 'AI Debriefer',
-    description: 'Get expert feedback on your presentation content and script to deliver with confidence.',
-    href: '/ai-debrief',
-    icon: <Mic className="w-10 h-10" />,
   },
   {
     title: 'Scene Preview Creator',
@@ -35,6 +29,12 @@ const features = [
     description: 'Redesign an existing slide or create a new one from text with content suggestions.',
     href: '/ppt-enhancer',
     icon: <Wand2 className="w-10 h-10" />,
+  },
+  {
+    title: 'AI Debriefer',
+    description: 'Get expert feedback on your presentation content and script to deliver with confidence.',
+    href: '/ai-debrief',
+    icon: <MessageSquareQuote className="w-10 h-10" />,
   },
   {
     title: 'Prompt Enhancer',

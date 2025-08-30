@@ -1,6 +1,6 @@
 
 import Link from 'next/link';
-import { Home, Sparkles, Presentation, Clapperboard, Wand2, Lightbulb, AudioLines, Menu, Mic } from 'lucide-react';
+import { Home, Sparkles, Presentation, Clapperboard, Wand2, Lightbulb, AudioLines, Menu, MessageSquareQuote } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -29,7 +29,7 @@ export const FlowAILogo = (props: React.SVGProps<SVGSVGElement>) => (
 const menuItems = [
     { href: '/', icon: Home, label: 'Home' },
     { href: '/presentation-generator', icon: Presentation, label: 'Presentation Generator' },
-    { href: '/ai-debrief', icon: Mic, label: 'AI Debriefer' },
+    { href: '/ai-debrief', icon: MessageSquareQuote, label: 'AI Debriefer' },
     { href: '/scene-preview', icon: Clapperboard, label: 'Scene Preview' },
     { href: '/ppt-enhancer', icon: Wand2, label: 'PPT Enhancer' },
     { href: '/prompt-enhancer', icon: Sparkles, label: 'Prompt Enhancer' },
