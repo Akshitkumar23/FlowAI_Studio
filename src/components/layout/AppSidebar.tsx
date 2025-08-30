@@ -1,9 +1,10 @@
+
 "use client";
 
-import { Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarTrigger } from "@/components/ui/sidebar";
+import { Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from "@/components/ui/sidebar";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { Home, Sparkles, Presentation, Clapperboard, Wand2, Lightbulb, AudioLines, FileSignature, MessageCircle, Bot } from 'lucide-react';
+import { Home, Sparkles, Presentation, Clapperboard, Wand2, Lightbulb, AudioLines } from 'lucide-react';
 import * as React from 'react';
 
 const menuItems = [
@@ -23,23 +24,22 @@ export function AppSidebar() {
         <Sidebar collapsible="icon">
             <SidebarHeader>
                 <div className="flex items-center gap-2">
-                    <SidebarTrigger />
                 </div>
             </SidebarHeader>
             <SidebarContent>
                 <SidebarMenu>
                     {menuItems.map((item) => (
                         <SidebarMenuItem key={item.href}>
-                             <Link href={item.href} passHref>
-                                <SidebarMenuButton
-                                    asChild
-                                    isActive={pathname === item.href}
-                                    tooltip={item.label}
-                                >
+                             <SidebarMenuButton
+                                asChild
+                                isActive={pathname === item.href}
+                                tooltip={item.label}
+                            >
+                                <Link href={item.href}>
                                     <item.icon />
                                     <span>{item.label}</span>
-                                </SidebarMenuButton>
-                            </Link>
+                                </Link>
+                            </SidebarMenuButton>
                         </SidebarMenuItem>
                     ))}
                 </SidebarMenu>
