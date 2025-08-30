@@ -58,7 +58,7 @@ export function FeatureCard({ title, description, href, icon, textColor }: Featu
           </div>
         </CardHeader>
         <CardContent className="flex flex-col flex-grow p-4">
-          <CardTitle className={cn("text-xl font-bold tracking-tight", textColor)}>
+          <CardTitle className={cn("text-2xl font-extrabold tracking-tight", textColor)}>
             {title}
           </CardTitle>
           <p className="mt-2 text-foreground/70 text-sm flex-grow">
