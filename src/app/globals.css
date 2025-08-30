@@ -7,7 +7,7 @@
     --background: 240 50% 15%; /* Navy Blue */
     --foreground: 0 0% 98%;
 
-    --card: 240 50% 15%;
+    --card: 240 50% 18%; /* Slightly lighter than background */
     --card-foreground: 0 0% 98%;
 
     --popover: 240 50% 15%;
@@ -39,7 +39,7 @@
     /* This is kept for compatibility with shadcn, but root defines our dark theme */
     --background: 240 50% 15%;
     --foreground: 0 0% 98%;
-    --card: 240 50% 15%;
+    --card: 240 50% 18%;
     --card-foreground: 0 0% 98%;
     --popover: 240 50% 15%;
     --popover-foreground: 0 0% 98%;
