@@ -14,7 +14,7 @@ interface FeatureCardProps {
 export function FeatureCard({ title, description, href, icon }: FeatureCardProps) {
   return (
     <Link href={href} className="h-full flex flex-col group animate-fade-in-up">
-        <Card className="h-full glass border-border/50 transition-all duration-300 ease-in-out group-hover:scale-105 group-hover:border-primary/50 group-hover:shadow-2xl group-hover:shadow-primary/20 flex flex-col">
+        <Card className="h-full glass border-border/50 transition-all duration-300 ease-in-out group-hover:scale-105 group-hover:border-primary/50 group-hover:shadow-2xl group-hover:shadow-primary/20 active:scale-100 active:shadow-lg flex flex-col">
         <CardHeader>
             <div className="p-3 bg-background rounded-lg border w-fit">
             {icon}
