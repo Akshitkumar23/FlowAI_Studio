@@ -23,7 +23,12 @@ const aiDebrieferPrompt = ai.definePrompt({
   name: 'aiDebrieferPrompt',
   input: {schema: AIDebrieferInputSchema},
   output: {schema: AIDebrieferOutputSchema},
-  prompt: `You are an expert presentation coach and debriefer. Your task is to analyze the user's presentation content.
+  prompt: `You are an expert presentation coach and debriefer.
+{{#if language}}
+Your response for the script should be in the following language: {{{language}}}.
+{{/if}}
+
+Your task is to analyze the user's presentation content.
 {{#if script}}
 You will also analyze the provided speech script.
 Analyze the following:

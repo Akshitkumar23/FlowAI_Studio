@@ -38,6 +38,7 @@ const FeedbackItemSchema = z.object({
 export const AIDebrieferInputSchema = z.object({
   slides: z.array(SlideSchema).describe("The content of the presentation slides."),
   script: z.string().optional().describe("The speech script for the presentation. If not provided, a script will be generated."),
+  language: z.string().optional().describe("The desired language for the script (e.g., English, Hinglish)."),
 });
 export type AIDebrieferInput = z.infer<typeof AIDebrieferInputSchema>;
 

@@ -9,9 +9,11 @@ import { Label } from "@/components/ui/label";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { aiDebriefer } from "@/ai/flows/ai-debrief-flow";
 import type { Slide, AIDebrieferOutput } from "@/ai/schemas";
-import { Loader2, Mic, Bot, Sparkles, CheckCircle, XCircle, BarChart, FileText, Info } from "lucide-react";
+import { Loader2, Mic, Bot, Sparkles, CheckCircle, XCircle, BarChart, FileText, Info, RefreshCw, Languages } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Progress } from "@/components/ui/progress";
+
+type RegenerationState = 'idle' | 'regenerating' | 'hinglish';
 
 export default function AIDebrieferPage() {
     const [slidesText, setSlidesText] = useState("");
@@ -19,6 +21,7 @@ export default function AIDebrieferPage() {
     const [result, setResult] = useState<AIDebrieferOutput | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [regenerationState, setRegenerationState] = useState<RegenerationState>('idle');
 
     const parseSlides = (text: string): Slide[] => {
         const slides: Slide[] = [];
@@ -34,17 +37,25 @@ export default function AIDebrieferPage() {
         return slides;
     }
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent, language?: 'Hinglish') => {
         e.preventDefault();
         setError(null);
-        setResult(null);
+        if (!language) {
+            setResult(null);
+        }
 
         if (!slidesText) {
             setError("Please provide the slide content.");
             return;
         }
 
-        setIsLoading(true);
+        const setLoadingState = language ? setRegenerationState : setIsLoading;
+        if (language) {
+            setRegenerationState(language === 'Hinglish' ? 'hinglish' : 'regenerating');
+        } else {
+            setIsLoading(true);
+        }
+
         try {
             const slides = parseSlides(slidesText);
             if (slides.length === 0) {
@@ -53,13 +64,13 @@ export default function AIDebrieferPage() {
                 return;
             }
             
-            const response = await aiDebriefer({ slides, script: scriptText });
+            const response = await aiDebriefer({ slides, script: scriptText, language });
             setResult(response);
         } catch (err) {
             console.error("Error getting debriefing feedback:", err);
             setError("An unexpected error occurred. Please try again.");
         } finally {
-            setIsLoading(false);
+            setLoadingState(language ? 'idle' : false);
         }
     }
     
@@ -205,6 +216,32 @@ export default function AIDebrieferPage() {
                                             <p className="text-sm whitespace-pre-wrap">{result.revisedScript}</p>
                                         </CardContent>
                                     </Card>
+                                    <div className="mt-4 flex gap-4">
+                                        <Button
+                                            variant="outline"
+                                            onClick={(e) => handleSubmit(e, undefined)}
+                                            disabled={regenerationState !== 'idle'}
+                                        >
+                                            {regenerationState === 'regenerating' ? (
+                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                            ) : (
+                                                <RefreshCw className="mr-2 h-4 w-4" />
+                                            )}
+                                            Regenerate Script
+                                        </Button>
+                                        <Button
+                                            variant="outline"
+                                            onClick={(e) => handleSubmit(e, 'Hinglish')}
+                                            disabled={regenerationState !== 'idle'}
+                                        >
+                                             {regenerationState === 'hinglish' ? (
+                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                            ) : (
+                                                <Languages className="mr-2 h-4 w-4" />
+                                            )}
+                                            Generate in Hinglish
+                                        </Button>
+                                    </div>
                                 </div>
 
                             </CardContent>
