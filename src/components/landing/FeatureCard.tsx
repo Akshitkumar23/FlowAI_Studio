@@ -66,7 +66,7 @@ export function FeatureCard({ title, description, href, icon, textColor }: Featu
           <p className="mt-2 text-foreground/70 text-sm flex-grow">
             {description}
           </p>
-          <Button asChild className="mt-4 w-full" variant="secondary">
+          <Button asChild className="mt-4 w-full">
               <Link href={href}>
                 {title}
               </Link>
