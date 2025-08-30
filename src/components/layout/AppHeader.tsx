@@ -5,7 +5,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
-const FlowAILogo = (props: React.SVGProps<SVGSVGElement>) => (
+export const FlowAILogo = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 256 256"
@@ -45,9 +45,11 @@ const NavMenu = () => {
                     <span className="sr-only">Open menu</span>
                 </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent align="end" className="glass">
                 {menuItems.map((item, index) => (
-                    <DropdownMenuItem key={item.href} asChild style={{ animationDelay: `${index * 50}ms` }}>
+                    <DropdownMenuItem key={item.href} asChild 
+                        className="animate-fade-in-up"
+                        style={{ animationDelay: `${index * 50 + 50}ms`, animationFillMode: 'both' }}>
                         <Link href={item.href}>
                             <item.icon className="mr-2 h-4 w-4" />
                             <span>{item.label}</span>
