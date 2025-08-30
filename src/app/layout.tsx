@@ -9,8 +9,6 @@ import { Footer } from '@/components/layout/Footer';
 import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
 import { SplashScreen } from '@/components/layout/SplashScreen';
-import { SidebarProvider, Sidebar, SidebarInset } from '@/components/ui/sidebar';
-import { AppSidebar } from '@/components/layout/AppSidebar';
 
 // Note: Metadata is not supported in client components.
 // We can either move it to a server component or manage the title dynamically.
@@ -43,15 +41,12 @@ export default function RootLayout({
         {loading ? (
           <SplashScreen />
         ) : (
-          <SidebarProvider>
-            <AppSidebar />
             <div className="flex flex-col min-h-screen">
                 <AppHeader />
                 <main className="flex-grow animate-fade-in">{children}</main>
                 <Footer />
                 <Toaster />
             </div>
-          </SidebarProvider>
         )}
       </body>
     </html>

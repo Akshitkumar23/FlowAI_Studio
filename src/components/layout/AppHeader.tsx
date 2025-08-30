@@ -1,5 +1,9 @@
+
 import Link from 'next/link';
-import { SidebarTrigger } from '@/components/ui/sidebar';
+import { Home, Sparkles, Presentation, Clapperboard, Wand2, Lightbulb, AudioLines, Menu } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 const FlowAILogo = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -22,18 +26,64 @@ const FlowAILogo = (props: React.SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
+const menuItems = [
+    { href: '/', icon: Home, label: 'Home' },
+    { href: '/presentation-generator', icon: Presentation, label: 'Presentation Generator' },
+    { href: '/scene-preview', icon: Clapperboard, label: 'Scene Preview' },
+    { href: '/ppt-enhancer', icon: Wand2, label: 'PPT Enhancer' },
+    { href: '/prompt-enhancer', icon: Sparkles, label: 'Prompt Enhancer' },
+    { href: '/creative-spark', icon: Lightbulb, label: 'Creative Spark' },
+    { href: '/text-to-speech', icon: AudioLines, label: 'Text-to-Speech' },
+]
+
+const NavMenu = () => {
+    return (
+        <>
+            {/* Mobile Menu */}
+            <div className="md:hidden">
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                            <Menu className="h-6 w-6"/>
+                            <span className="sr-only">Open menu</span>
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        {menuItems.map((item) => (
+                            <DropdownMenuItem key={item.href} asChild>
+                                <Link href={item.href}>
+                                    <item.icon className="mr-2 h-4 w-4" />
+                                    <span>{item.label}</span>
+                                </Link>
+                            </DropdownMenuItem>
+                        ))}
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            </div>
+            {/* Desktop Menu */}
+            <nav className="hidden md:flex items-center gap-2">
+                {menuItems.map(item => (
+                    <Button key={item.href} asChild variant="ghost" size="sm">
+                        <Link href={item.href} title={item.label}>
+                           <item.icon className="h-5 w-5" />
+                           <span className="sr-only">{item.label}</span>
+                        </Link>
+                    </Button>
+                ))}
+            </nav>
+        </>
+    )
+}
 
 export function AppHeader() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-14 max-w-screen-2xl items-center">
-        <div className="flex items-center gap-4">
-            <SidebarTrigger className="md:hidden"/>
-            <Link href="/" className="flex items-center space-x-2">
+      <div className="container flex h-14 max-w-screen-2xl items-center justify-between">
+        <Link href="/" className="flex items-center space-x-2">
             <FlowAILogo />
             <span className="font-bold sm:inline-block">FlowAI Studio</span>
-            </Link>
-        </div>
+        </Link>
+        <NavMenu />
       </div>
     </header>
   );
