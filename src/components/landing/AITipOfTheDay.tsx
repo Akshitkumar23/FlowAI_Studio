@@ -20,7 +20,7 @@ export function AITipOfTheDay() {
     <section>
       <div className="glass rounded-xl p-6 md:p-8 flex items-center gap-6">
         <div className="p-3 bg-background/50 rounded-full border-2 border-primary/30">
-            <Lightbulb className="w-8 h-8 icon-glow-primary" />
+            <Lightbulb className="w-8 h-8 icon-glow-primary animate-pulse" />
         </div>
         <div>
           <h3 className="font-bold text-lg text-primary-foreground/90">AI Tip of the Day</h3>

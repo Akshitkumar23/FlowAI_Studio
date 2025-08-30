@@ -114,7 +114,7 @@ export default function PromptEnhancerPage() {
               </div>
             )}
             {enhancedPrompt && (
-              <div className="space-y-4">
+              <div className="space-y-4 animate-fade-in">
                 <div>
                   <h3 className="font-semibold mb-2">Enhanced Prompt:</h3>
                   <Card className="bg-secondary/50 p-4 relative">
@@ -172,7 +172,7 @@ export default function PromptEnhancerPage() {
               </div>
             )}
             {stylePrompt && (
-              <div>
+              <div className="animate-fade-in">
                 <h3 className="font-semibold mt-4 mb-2">Style Prompt:</h3>
                 <Card className="bg-secondary/50 p-4">
                   <p className="text-sm whitespace-pre-wrap">{stylePrompt}</p>

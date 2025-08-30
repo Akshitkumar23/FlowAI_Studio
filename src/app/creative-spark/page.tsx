@@ -68,7 +68,7 @@ export default function CreativeSparkPage() {
         </div>
 
         {spark && (
-          <Card className="glass mb-8">
+          <Card className="glass mb-8 animate-fade-in">
             <CardHeader>
               <CardTitle>Your Creative Spark</CardTitle>
             </CardHeader>
@@ -100,7 +100,7 @@ export default function CreativeSparkPage() {
         )}
 
         {expandedSpark && (
-          <Card className="glass">
+          <Card className="glass animate-fade-in">
             <CardHeader>
               <CardTitle>Expanded Idea</CardTitle>
             </CardHeader>

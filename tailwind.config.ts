@@ -1,3 +1,4 @@
+
 import type {Config} from 'tailwindcss';
 
 export default {
@@ -105,7 +106,21 @@ export default {
         'pulse-bg': {
           '0%, 100%': { backgroundColor: 'hsla(var(--card), 0.5)' },
           '50%': { backgroundColor: 'hsla(var(--card), 0.8)' },
-        }
+        },
+        'fade-out': {
+            from: { opacity: '1' },
+            to: { opacity: '0' },
+        },
+        'splash-pop-in': {
+            '0%': {
+                opacity: '0',
+                transform: 'scale(0.9)',
+            },
+            '100%': {
+                opacity: '1',
+                transform: 'scale(1)',
+            },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
@@ -113,6 +128,8 @@ export default {
         'fade-in': 'fade-in 0.5s ease-in-out forwards',
         'fade-in-up': 'fade-in-up 0.6s ease-out forwards',
         'pulse-bg': 'pulse-bg 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'fade-out': 'fade-out 0.5s ease-out forwards',
+        'splash-pop-in': 'splash-pop-in 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards',
       },
     },
   },
