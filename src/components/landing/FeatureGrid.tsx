@@ -7,6 +7,7 @@ import {
   Sparkles,
   Lightbulb,
   AudioLines,
+  Mic,
 } from 'lucide-react';
 import { FeatureCard } from './FeatureCard';
 
@@ -16,6 +17,12 @@ const features = [
     description: 'Generate a full presentation from a topic, including text and AI-generated images.',
     href: '/presentation-generator',
     icon: <Presentation className="w-10 h-10" />,
+  },
+  {
+    title: 'Presentation Coach',
+    description: 'Get expert feedback on your presentation content and script to deliver with confidence.',
+    href: '/presentation-coach',
+    icon: <Mic className="w-10 h-10" />,
   },
   {
     title: 'Scene Preview Creator',
