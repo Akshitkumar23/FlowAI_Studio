@@ -1,0 +1,191 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 240 50% 15%; /* Navy Blue */
+    --foreground: 0 0% 98%;
+
+    --card: 240 50% 18%; /* Slightly lighter than background */
+    --card-foreground: 0 0% 98%;
+
+    --popover: 240 50% 15%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 180 100% 25%; /* Bright Teal/Aqua */
+    --primary-foreground: 180 0% 100%;
+
+    --secondary: 240 20% 25%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 240 20% 25%;
+    --muted-foreground: 0 0% 63.9%;
+
+    --accent: 300 100% 35%; /* Vibrant Purple for accents */
+    --accent-foreground: 300 0% 100%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 240 20% 35%;
+    --input: 240 20% 35%;
+    --ring: 180 100% 35%; /* Teal for rings */
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 240 50% 15%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-border: 240 20% 35%;
+    --sidebar-accent: 240 50% 18%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-ring: 180 100% 35%;
+  }
+
+  .dark {
+    /* This is kept for compatibility with shadcn, but root defines our dark theme */
+    --background: 240 50% 15%;
+    --foreground: 0 0% 98%;
+    --card: 240 50% 18%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 50% 15%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 180 100% 25%;
+    --primary-foreground: 180 0% 100%;
+    --secondary: 240 20% 25%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 20% 25%;
+    --muted-foreground: 0 0% 63.9%;
+    --accent: 300 100% 35%;
+    --accent-foreground: 300 0% 100%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 20% 35%;
+    --input: 240 20% 35%;
+    --ring: 180 100% 35%;
+
+    --sidebar-background: 240 50% 15%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-border: 240 20% 35%;
+    --sidebar-accent: 240 50% 18%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-ring: 180 100% 35%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .glass {
+    @apply bg-card/50 backdrop-blur-lg border border-white/10 transition-all duration-300;
+    box-shadow: 0 8px 16px -4px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
+  }
+  
+  .glass:hover {
+    transform: scale(1.02);
+    box-shadow: 0 12px 24px -4px rgba(0, 0, 0, 0.25), 0 8px 12px -4px rgba(0, 0, 0, 0.15);
+  }
+
+
+  .icon-glow-primary {
+    @apply text-primary drop-shadow-[0_0_8px_hsl(var(--primary)/0.7)];
+  }
+  .icon-glow-accent {
+    @apply text-accent drop-shadow-[0_0_8px_hsl(var(--accent)/0.7)];
+  }
+  
+  .text-glow-primary {
+    @apply text-primary drop-shadow-[0_0_4px_hsl(var(--primary)/0.6)];
+  }
+  .text-glow-accent {
+    @apply text-accent drop-shadow-[0_0_4px_hsl(var(--accent)/0.6)];
+  }
+
+  .animated-gradient-bg {
+    background: linear-gradient(
+      -45deg,
+      hsl(var(--background)),
+      hsl(var(--primary) / 0.3),
+      hsl(var(--accent) / 0.3),
+      hsl(var(--background))
+    );
+    background-size: 400% 400%;
+    animation: gradient 20s ease infinite;
+  }
+
+  @keyframes gradient {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.5s ease-in-out forwards;
+  }
+  
+  @keyframes fade-in-up {
+    from {
+        opacity: 0;
+        transform: translateY(24px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in-up {
+    animation: fade-in-up 0.6s ease-out forwards;
+  }
+  
+  @keyframes pulse-bg {
+    0%, 100% { background-color: hsla(var(--card), 0.5); }
+    50% { background-color: hsla(var(--card), 0.8); }
+  }
+
+  .animate-pulse-bg {
+    animation: pulse-bg 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  @keyframes fade-out {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }
+
+  .animate-fade-out {
+    animation: fade-out 0.5s ease-out forwards;
+  }
+
+  @keyframes splash-pop-in {
+    0% {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+  }
+
+  .animate-splash-pop-in {
+    animation: splash-pop-in 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  }
+}
