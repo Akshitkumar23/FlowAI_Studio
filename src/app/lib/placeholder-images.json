@@ -1,0 +1,19 @@
+
+{
+  "hero": {
+    "url": "https://picsum.photos/seed/flow-hero/1200/600",
+    "hint": "futuristic workspace"
+  },
+  "presentation": {
+    "url": "https://picsum.photos/seed/ppt/800/450",
+    "hint": "professional presentation"
+  },
+  "resume": {
+    "url": "https://picsum.photos/seed/resume/800/450",
+    "hint": "modern resume"
+  },
+  "creative": {
+    "url": "https://picsum.photos/seed/creative/800/450",
+    "hint": "artistic concept"
+  }
+}
